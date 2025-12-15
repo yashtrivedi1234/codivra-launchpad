@@ -7,7 +7,7 @@ const navLinks = [
   { href: "#about", label: "About" },
   { href: "#pricing", label: "Pricing" },
   { href: "#portfolio", label: "Portfolio" },
-  { href: "#testimonials", label: "Testimonials" },
+  { href: "/blog", label: "Blog" },
   { href: "#contact", label: "Contact" },
 ];
 
@@ -32,7 +32,7 @@ export const Header = () => {
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2">
           <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-lg">C</span>
           </div>
@@ -55,8 +55,8 @@ export const Header = () => {
         </nav>
 
         <div className="hidden lg:flex items-center gap-4">
-          <Button variant="accent" size="lg">
-            Get a Quote
+          <Button variant="accent" size="lg" asChild>
+            <a href="#contact">Get a Quote</a>
           </Button>
         </div>
 
@@ -83,8 +83,8 @@ export const Header = () => {
                 {link.label}
               </a>
             ))}
-            <Button variant="accent" className="mt-4">
-              Get a Quote
+            <Button variant="accent" className="mt-4" asChild>
+              <a href="#contact">Get a Quote</a>
             </Button>
           </nav>
         </div>
