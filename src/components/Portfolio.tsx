@@ -1,4 +1,5 @@
 import { ExternalLink } from "lucide-react";
+import { AnimatedSection, AnimatedStagger, AnimatedItem } from "./AnimatedSection";
 
 const projects = [
   {
@@ -44,7 +45,7 @@ export const Portfolio = () => {
     <section id="portfolio" className="py-24">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
           <span className="inline-block text-accent font-semibold text-sm tracking-wider uppercase mb-4">
             Our Work
           </span>
@@ -54,45 +55,44 @@ export const Portfolio = () => {
           <p className="text-muted-foreground text-lg">
             A showcase of our best work across various industries and services.
           </p>
-        </div>
+        </AnimatedSection>
 
         {/* Projects Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <AnimatedStagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {projects.map((project) => (
-            <div
-              key={project.title}
-              className="group relative bg-card rounded-2xl overflow-hidden shadow-soft hover-lift border border-border/50"
-            >
-              {/* Image */}
-              <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              </div>
-              
-              {/* Content */}
-              <div className="p-6">
-                <span className="text-xs font-medium text-accent uppercase tracking-wider">
-                  {project.category}
-                </span>
-                <h3 className="text-lg font-semibold text-foreground mt-2 mb-2 flex items-center gap-2">
-                  {project.title}
-                  <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </h3>
-                <p className="text-muted-foreground text-sm">
-                  {project.description}
-                </p>
-              </div>
+            <AnimatedItem key={project.title}>
+              <div className="group relative bg-card rounded-2xl overflow-hidden shadow-soft hover-lift border border-border/50">
+                {/* Image */}
+                <div className="aspect-[4/3] overflow-hidden">
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                </div>
+                
+                {/* Content */}
+                <div className="p-6">
+                  <span className="text-xs font-medium text-accent uppercase tracking-wider">
+                    {project.category}
+                  </span>
+                  <h3 className="text-lg font-semibold text-foreground mt-2 mb-2 flex items-center gap-2">
+                    {project.title}
+                    <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    {project.description}
+                  </p>
+                </div>
 
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex items-center justify-center">
-                <span className="text-primary-foreground font-semibold">View Project</span>
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex items-center justify-center">
+                  <span className="text-primary-foreground font-semibold">View Project</span>
+                </div>
               </div>
-            </div>
+            </AnimatedItem>
           ))}
-        </div>
+        </AnimatedStagger>
       </div>
     </section>
   );

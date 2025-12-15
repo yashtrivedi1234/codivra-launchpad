@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Code2, Sparkles } from "lucide-react";
 
@@ -6,8 +7,16 @@ export const Hero = () => {
     <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-subtle" />
-      <div className="absolute top-20 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl" />
+      <motion.div
+        className="absolute top-20 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl"
+        animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.7, 0.5] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl"
+        animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      />
       
       {/* Grid Pattern */}
       <div 
@@ -20,25 +29,45 @@ export const Hero = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="animate-fade-up inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium mb-8"
+          >
             <Sparkles size={16} />
             <span>Transforming Ideas into Digital Excellence</span>
-          </div>
+          </motion.div>
 
           {/* Main Heading */}
-          <h1 className="animate-fade-up-delay-1 text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6"
+          >
             Build Your Digital Future with{" "}
             <span className="text-gradient">Codivra Solution</span>
-          </h1>
+          </motion.h1>
 
           {/* Subheading */}
-          <p className="animate-fade-up-delay-2 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+          >
             We craft innovative web solutions, custom software, and digital strategies 
             that drive business growth. Your trusted IT partner for scalable success.
-          </p>
+          </motion.p>
 
           {/* CTA Buttons */}
-          <div className="animate-fade-up-delay-3 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
             <Button variant="hero" size="xl" className="group">
               Get a Free Quote
               <ArrowRight className="transition-transform group-hover:translate-x-1" />
@@ -47,10 +76,15 @@ export const Hero = () => {
               <Code2 size={20} />
               View Our Work
             </Button>
-          </div>
+          </motion.div>
 
           {/* Trust Indicators */}
-          <div className="animate-fade-up-delay-3 mt-16 pt-10 border-t border-border/50">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="mt-16 pt-10 border-t border-border/50"
+          >
             <p className="text-sm text-muted-foreground mb-6">Trusted by innovative companies</p>
             <div className="flex flex-wrap items-center justify-center gap-8 opacity-50">
               {["TechStart", "InnovateCo", "GrowthLabs", "DigitalEdge", "ScaleUp"].map((company) => (
@@ -59,7 +93,7 @@ export const Hero = () => {
                 </span>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
