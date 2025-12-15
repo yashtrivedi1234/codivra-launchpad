@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     question: "What is your pricing structure?",
-    answer: "We offer flexible pricing with three main tiers: Starter ($999), Professional ($2,499), and Enterprise (custom quote). Each tier includes different features and support levels. We also offer custom quotes for projects that don't fit standard packages.",
+    answer: "We offer flexible pricing with three main tiers: Starter ($99), Professional ($499), and Enterprise (custom quote). Each tier includes different features and support levels. We also offer custom quotes for projects that don't fit standard packages.",
   },
   {
     question: "Do you offer ongoing support and maintenance?",

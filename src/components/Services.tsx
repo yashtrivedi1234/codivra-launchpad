@@ -32,6 +32,12 @@ const services = [
     description: "Comprehensive marketing campaigns that generate leads, conversions, and measurable ROI.",
     features: ["PPC Campaigns", "Social Media", "Email Marketing"],
   },
+  {
+    icon: Globe,
+    title: "Website Maintenance",
+    description: "Ongoing support, updates, and performance monitoring to keep your website running smoothly.",
+    features: ["Bug Fixes", "Content Updates", "Performance Checks"],
+  },
 ];
 
 export const Services = () => {

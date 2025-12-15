@@ -3,40 +3,40 @@ import { AnimatedSection, AnimatedStagger, AnimatedItem } from "./AnimatedSectio
 
 const projects = [
   {
-    title: "E-Commerce Platform",
-    category: "Web Development",
-    description: "Modern online store with seamless checkout experience",
-    image: "https://images.unsplash.com/photo-1661956602116-aa6865609028?w=600&h=400&fit=crop",
+    title: "Business Website",
+    category: "Website Development",
+    description: "Responsive business website built for a local startup with clean UI and fast performance.",
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&h=400&fit=crop",
   },
   {
-    title: "Healthcare Dashboard",
-    category: "Custom Software",
-    description: "Patient management system for medical clinics",
+    title: "Startup Landing Page",
+    category: "UI/UX Design",
+    description: "Conversion-focused landing page designed for a newly launched startup.",
+    image: "https://images.unsplash.com/photo-1559028012-481c04fa702d?w=600&h=400&fit=crop",
+  },
+  {
+    title: "Admin Dashboard",
+    category: "Web App Development",
+    description: "Custom admin dashboard for managing users, data, and reports.",
     image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop",
   },
   {
-    title: "Brand Identity Suite",
+    title: "CRM / Management Panel",
+    category: "Custom Software Development",
+    description: "Web-based management system designed to handle users, records, and internal workflows.",
+    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=600&h=400&fit=crop",
+  },
+  {
+    title: "Brand Identity Design",
     category: "Graphic Design",
-    description: "Complete visual identity for a tech startup",
+    description: "Logo and brand assets created for a small business.",
     image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=600&h=400&fit=crop",
   },
   {
-    title: "SEO Campaign",
-    category: "SEO",
-    description: "300% increase in organic traffic in 6 months",
+    title: "SEO Setup",
+    category: "SEO & Optimization",
+    description: "Basic SEO setup to improve visibility and search performance.",
     image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=600&h=400&fit=crop",
-  },
-  {
-    title: "Social Media Growth",
-    category: "Digital Marketing",
-    description: "Comprehensive social strategy for lifestyle brand",
-    image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&h=400&fit=crop",
-  },
-  {
-    title: "SaaS Application",
-    category: "Custom Software",
-    description: "Cloud-based project management tool",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop",
   },
 ];
 
@@ -53,7 +53,7 @@ export const Portfolio = () => {
             Featured Projects
           </h2>
           <p className="text-muted-foreground text-lg">
-            A showcase of our best work across various industries and services.
+            Sample work representing the type of services we provide to startups and growing businesses.
           </p>
         </AnimatedSection>
 
@@ -87,7 +87,7 @@ export const Portfolio = () => {
 
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex items-center justify-center">
-                  <span className="text-primary-foreground font-semibold">View Project</span>
+                  <span className="text-primary-foreground font-semibold">Service Preview</span>
                 </div>
               </div>
             </AnimatedItem>

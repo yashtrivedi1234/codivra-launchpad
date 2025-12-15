@@ -17,21 +17,20 @@ export const About = () => {
               <span className="text-gradient">Digital Innovation</span>
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-              Codivra Solution is a full-service IT company dedicated to helping businesses 
-              thrive in the digital age. With years of expertise and a passion for innovation, 
-              we deliver solutions that drive real results.
+              Codivra Solutions is a young, service-based IT startup that began its journey in December.
+              We help startups and growing businesses build reliable digital products with clarity and care.
             </p>
             <p className="text-muted-foreground leading-relaxed mb-8">
-              Our team of skilled developers, designers, and strategists work collaboratively 
-              to understand your unique challenges and craft tailored solutions that exceed expectations.
+              As a small and focused team, we work closely with our clients to understand their goals
+              and deliver practical, scalable solutions without unnecessary complexity.
             </p>
 
             {/* Values */}
             <div className="space-y-6">
               {[
-                { icon: Target, title: "Mission-Driven", desc: "Empowering businesses with technology solutions that make a real impact." },
-                { icon: Users, title: "Client-Focused", desc: "Your success is our priority. We build lasting partnerships, not just projects." },
-                { icon: Lightbulb, title: "Innovation-Led", desc: "Staying ahead with cutting-edge technologies and creative problem-solving." },
+                { icon: Target, title: "Clear Mission", desc: "Delivering honest, practical technology solutions that help businesses grow." },
+                { icon: Users, title: "Client Partnership", desc: "We work as an extended team, not just a service provider." },
+                { icon: Lightbulb, title: "Smart Innovation", desc: "Using the right tools and technologies — not hype — to solve real problems." },
               ].map((item, index) => (
                 <motion.div
                   key={item.title}
@@ -71,10 +70,10 @@ export const About = () => {
               {/* Stats Grid */}
               <div className="relative z-10 grid grid-cols-2 gap-6 text-primary-foreground">
                 {[
-                  { value: "5+", label: "Years Experience" },
-                  { value: "150+", label: "Projects Delivered" },
-                  { value: "50+", label: "Happy Clients" },
-                  { value: "24/7", label: "Support Available" },
+                  { value: "Dec 2025", label: "Founded" },
+                  { value: "9+", label: "Core Team" },
+                  { value: "10+", label: "Projects Delivered" },
+                  { value: "Direct", label: "Client Support" },
                 ].map((stat, index) => (
                   <motion.div
                     key={stat.label}

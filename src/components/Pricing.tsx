@@ -6,7 +6,7 @@ const plans = [
   {
     name: "Starter",
     description: "Perfect for small businesses getting started",
-    price: "999",
+    price: "99",
     period: "project",
     features: [
       "5-page responsive website",
@@ -22,7 +22,7 @@ const plans = [
   {
     name: "Professional",
     description: "Ideal for growing businesses",
-    price: "2,499",
+    price: "499",
     period: "project",
     features: [
       "10-page custom website",
@@ -65,13 +65,13 @@ export const Pricing = () => {
         {/* Section Header */}
         <AnimatedSection className="text-center max-w-2xl mx-auto mb-16">
           <span className="inline-block text-accent font-semibold text-sm tracking-wider uppercase mb-4">
-            Pricing Plans
+            Our Services
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Transparent Pricing for Every Need
+            Simple & Honest Pricing for Startup Services
           </h2>
           <p className="text-muted-foreground text-lg">
-            Choose the package that fits your business. No hidden fees, just results.
+            We are a service-based startup helping businesses build websites, apps, and digital solutions.
           </p>
         </AnimatedSection>
 
@@ -154,10 +154,11 @@ export const Pricing = () => {
 
         {/* Bottom Note */}
         <AnimatedSection delay={0.3} className="text-center text-muted-foreground text-sm mt-12 max-w-2xl mx-auto">
-          All plans include a free consultation. Need something custom? 
+          We work as a service partner, not a large agency. 
+          Pricing depends on scope, timelines, and requirements.
           <a href="#contact" className="text-accent hover:underline ml-1">
-            Contact us
-          </a> for a tailored solution.
+            Talk to us
+          </a> to get the right solution for your business.
         </AnimatedSection>
       </div>
     </section>

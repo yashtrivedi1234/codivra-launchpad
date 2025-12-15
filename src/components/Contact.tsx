@@ -48,9 +48,9 @@ export const Contact = () => {
               {/* Contact Details */}
               <div className="space-y-6">
                 {[
-                  { icon: Mail, label: "Email Us", value: "hello@codivra.com", href: "mailto:hello@codivra.com" },
-                  { icon: Phone, label: "Call Us", value: "+1 (234) 567-890", href: "tel:+1234567890" },
-                  { icon: MapPin, label: "Visit Us", value: "123 Tech Street, Silicon Valley, CA", href: null },
+                  { icon: Mail, label: "Email Us", value: "codivirasolution@gmail.com", href: "mailto:codivirasolution@gmail.com" },
+                  { icon: Phone, label: "Call Us", value: "+91 9452819739", href: "tel:+919452819739" },
+                  { icon: MapPin, label: "Visit Us", value: "813, Vikas Nagar Colony, Khoobpur, Sitapur", href: null },
                 ].map((item, index) => (
                   <motion.div
                     key={item.label}

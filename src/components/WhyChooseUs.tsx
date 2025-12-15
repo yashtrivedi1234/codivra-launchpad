@@ -3,19 +3,58 @@ import { Shield, Clock, Headphones, Award, Zap, Heart } from "lucide-react";
 import { AnimatedSection, AnimatedStagger, AnimatedItem } from "./AnimatedSection";
 
 const reasons = [
-  { icon: Shield, title: "Proven Expertise", description: "Years of experience delivering successful projects across industries." },
-  { icon: Clock, title: "On-Time Delivery", description: "We respect deadlines and ensure projects launch when promised." },
-  { icon: Headphones, title: "Dedicated Support", description: "24/7 support team ready to assist you whenever you need help." },
-  { icon: Award, title: "Quality Assured", description: "Rigorous testing and quality checks for flawless deliverables." },
-  { icon: Zap, title: "Scalable Solutions", description: "Built to grow with your business, from startup to enterprise." },
-  { icon: Heart, title: "Client Success", description: "Your success is our measure of success. We're invested in your growth." },
+  {
+    icon: Heart,
+    title: "Founder-Led Team",
+    description: "Work directly with the founders and core team members who are personally involved in every project."
+  },
+  {
+    icon: Zap,
+    title: "Agile & Flexible",
+    description: "As a young startup, we adapt quickly to your requirements and iterate fast without rigid processes."
+  },
+  {
+    icon: Shield,
+    title: "Honest Commitment",
+    description: "We commit only to what we can deliver and focus on building long-term trust with our clients."
+  },
+  {
+    icon: Clock,
+    title: "On-Time Delivery",
+    description: "Clear timelines, regular updates, and disciplined execution to ensure timely delivery."
+  },
+  {
+    icon: Headphones,
+    title: "Direct Communication",
+    description: "No middle layers — you communicate directly with developers and decision-makers."
+  },
+  {
+    icon: Award,
+    title: "Quality-Focused Start",
+    description: "We may be new, but we follow best practices to deliver clean, scalable, and maintainable solutions."
+  },
 ];
 
 const stats = [
-  { value: "98%", label: "Client Satisfaction" },
-  { value: "150+", label: "Projects Completed" },
-  { value: "50+", label: "Active Clients" },
-  { value: "15+", label: "Team Experts" },
+  { value: "Dec 2025", label: "Founded" },
+  { value: "9+", label: "Core Team Members" },
+  { value: "10+", label: "Projects Delivered" },
+  { value: "100%", label: "Client Commitment" },
+];
+
+const services = [
+  {
+    title: "Website Development",
+    description: "Modern, responsive websites tailored to your business needs.",
+  },
+  {
+    title: "Web & App Development",
+    description: "Custom web apps and dashboards built for performance and scale.",
+  },
+  {
+    title: "UI/UX & Design",
+    description: "Clean, user-friendly designs focused on usability and branding.",
+  },
 ];
 
 export const WhyChooseUs = () => {
@@ -28,10 +67,10 @@ export const WhyChooseUs = () => {
             Why Choose Us
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            The Codivra Advantage
+            Why Clients Choose Our Startup
           </h2>
           <p className="text-muted-foreground text-lg">
-            We combine technical excellence with genuine care for your success.
+            A small, dedicated service-based startup focused on quality, transparency, and long-term partnerships.
           </p>
         </AnimatedSection>
 
@@ -55,6 +94,22 @@ export const WhyChooseUs = () => {
             ))}
           </div>
         </AnimatedSection>
+
+        {/* Services Cards */}
+        <AnimatedStagger className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-20">
+          {services.map((service) => (
+            <AnimatedItem key={service.title}>
+              <div className="bg-card border border-border rounded-xl p-6 shadow-soft hover:shadow-medium transition-all duration-300 text-center">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {service.title}
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  {service.description}
+                </p>
+              </div>
+            </AnimatedItem>
+          ))}
+        </AnimatedStagger>
 
         {/* Reasons Grid */}
         <AnimatedStagger className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
