@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, Send, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AnimatedSection } from "./AnimatedSection";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,24 +19,18 @@ export const Contact = () => {
 
     const formData = new FormData(e.currentTarget);
     const payload = {
-      name: (formData.get("name") || "").toString(),
-      email: (formData.get("email") || "").toString(),
+      name: (formData.get("name") || "").toString().trim(),
+      email: (formData.get("email") || "").toString().trim(),
       service: (formData.get("service") || "").toString(),
-      message: (formData.get("message") || "").toString(),
+      message: (formData.get("message") || "").toString().trim(),
     };
 
     try {
-      const apiBase = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
-      const response = await fetch(`${apiBase}/api/contact`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const { error } = await supabase
+        .from("contact_submissions")
+        .insert(payload);
 
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(errorBody?.message || "Unable to send your message.");
-      }
+      if (error) throw error;
 
       setIsSubmitted(true);
       e.currentTarget.reset();
