@@ -98,7 +98,7 @@ export const Team = () => {
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-contain bg-gray-100 transition-transform duration-500 group-hover:scale-105"
                   />
                   {/* Overlay with social links */}
                   <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-90 transition-opacity duration-300 flex items-center justify-center gap-3">
