@@ -1,18 +1,19 @@
+import { Link } from "react-router-dom";
 import { Linkedin, Twitter, Facebook, Instagram } from "lucide-react";
 
 const footerLinks = {
   services: [
-    { label: "Web Development", href: "#services" },
-    { label: "Custom Software", href: "#services" },
-    { label: "Graphic Design", href: "#services" },
-    { label: "SEO Optimization", href: "#services" },
-    { label: "Digital Marketing", href: "#services" },
+    { label: "Web Development", href: "/services" },
+    { label: "Custom Software", href: "/services" },
+    { label: "Graphic Design", href: "/services" },
+    { label: "SEO Optimization", href: "/services" },
+    { label: "Digital Marketing", href: "/services" },
   ],
   company: [
-    { label: "About Us", href: "#about" },
-    { label: "Our Work", href: "#portfolio" },
-    { label: "Testimonials", href: "#testimonials" },
-    { label: "Contact", href: "#contact" },
+    { label: "About Us", href: "/about" },
+    { label: "Our Work", href: "/portfolio" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Contact", href: "/contact" },
   ],
 };
 
@@ -31,14 +32,14 @@ export const Footer = () => {
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             {/* Brand */}
             <div className="md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
+              <Link to="/" className="flex items-center gap-2 mb-4">
                 <div className="w-10 h-10 bg-primary-foreground/10 rounded-lg flex items-center justify-center">
                   <span className="font-bold text-lg">C</span>
                 </div>
                 <span className="text-xl font-bold">
                   Codivra<span className="text-accent">.</span>
                 </span>
-              </div>
+              </Link>
               <p className="text-primary-foreground/70 text-sm leading-relaxed mb-6">
                 Empowering businesses with innovative IT solutions since 2019. 
                 Your trusted partner in digital transformation.
@@ -63,12 +64,12 @@ export const Footer = () => {
               <ul className="space-y-3">
                 {footerLinks.services.map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
+                    <Link
+                      to={link.href}
                       className="text-primary-foreground/70 hover:text-primary-foreground text-sm transition-colors"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -80,12 +81,12 @@ export const Footer = () => {
               <ul className="space-y-3">
                 {footerLinks.company.map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
+                    <Link
+                      to={link.href}
                       className="text-primary-foreground/70 hover:text-primary-foreground text-sm transition-colors"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
