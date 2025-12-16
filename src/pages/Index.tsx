@@ -8,6 +8,7 @@ import { Pricing } from "@/components/Pricing";
 import { Portfolio } from "@/components/Portfolio";
 import { Testimonials } from "@/components/Testimonials";
 import { FAQ } from "@/components/FAQ";
+import { BlogSection } from "@/components/BlogSection";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 
@@ -25,6 +26,7 @@ const Index = () => {
         <Portfolio />
         <Testimonials />
         <FAQ />
+        <BlogSection />
         <Contact />
       </main>
       <Footer />
