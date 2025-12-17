@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/AnimatedSection";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import PageBreadcrumb from "@/components/PageBreadcrumb";
 
 const benefits = [
   {
@@ -376,6 +377,9 @@ const Careers = () => {
         />
       )}
       
+      <main className="pt-20">
+        <PageBreadcrumb />
+      
       {/* Hero Section */}
       <section className="pt-32 pb-20 bg-gradient-to-b from-muted/50 to-background">
         <div className="container mx-auto px-4">
@@ -552,6 +556,7 @@ const Careers = () => {
           </AnimatedSection>
         </div>
       </section>
+      </main>
 
       <Footer />
     </div>
