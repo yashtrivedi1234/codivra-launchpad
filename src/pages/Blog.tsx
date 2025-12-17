@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Calendar, Clock, ArrowRight, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/AnimatedSection";
+import PageBreadcrumb from "@/components/PageBreadcrumb";
 
 const categories = [
   { name: "All", count: 12 },
@@ -122,6 +123,9 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-background">
       <BlogHeader />
+      <div className="pt-16">
+        <PageBreadcrumb />
+      </div>
 
       {/* Hero Section */}
       <section className="py-20 bg-gradient-subtle">
