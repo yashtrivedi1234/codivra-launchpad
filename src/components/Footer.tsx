@@ -41,7 +41,7 @@ export const Footer = () => {
                 </span>
               </Link>
               <p className="text-primary-foreground/70 text-sm leading-relaxed mb-6">
-                Empowering businesses with innovative IT solutions since 2019. 
+                Empowering businesses with innovative IT solutions since Dec 2025. 
                 Your trusted partner in digital transformation.
               </p>
               <div className="flex gap-3">
