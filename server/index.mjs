@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { z } from "zod";
 import nodemailer from "nodemailer";
+import { MongoClient } from "mongodb";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -17,6 +18,9 @@ app.use(
 );
 app.use(express.json());
 
+/**
+ * CONTACT FORM HANDLING (existing behaviour)
+ */
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please provide a valid email"),
@@ -52,10 +56,43 @@ transporter
     );
   });
 
+/**
+ * MONGODB SETUP FOR JOB APPLICATIONS
+ */
+const mongoUri =
+  process.env.MONGODB_URI ||
+  "mongodb://localhost:27017/codivra"; // fallback for local dev
+const mongoDbName = process.env.MONGODB_DB_NAME || "codivra";
+
+const careersApplicationSchema = z.object({
+  job_title: z.string().min(2),
+  name: z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().nullable().optional(),
+  linkedin_url: z.string().url().nullable().optional(),
+  portfolio_url: z.string().url().nullable().optional(),
+  cover_letter: z.string().nullable().optional(),
+});
+
+let mongoClient;
+
+async function getApplicationsCollection() {
+  if (!mongoClient) {
+    mongoClient = new MongoClient(mongoUri);
+    await mongoClient.connect();
+    console.log("Connected to MongoDB");
+  }
+  const db = mongoClient.db(mongoDbName);
+  return db.collection("job_applications");
+}
+
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
+/**
+ * CONTACT API
+ */
 app.post("/api/contact", async (req, res) => {
   const parsed = contactSchema.safeParse(req.body);
 
@@ -117,9 +154,47 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-// Test endpoint to verify mail sending quickly.
-// If SMTP env vars are not provided, this will use Nodemailer's
-// Ethereal test account and return a preview URL.
+/**
+ * CAREERS / JOB APPLICATIONS API (MongoDB instead of Supabase)
+ */
+app.post("/api/careers/applications", async (req, res) => {
+  const parsed = careersApplicationSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      error: "Invalid input",
+      issues: parsed.error.flatten(),
+    });
+  }
+
+  try {
+    const collection = await getApplicationsCollection();
+    const doc = {
+      ...parsed.data,
+      created_at: new Date().toISOString(),
+    };
+    const result = await collection.insertOne(doc);
+
+    return res.json({
+      status: "ok",
+      id: result.insertedId,
+      message: "Application submitted successfully",
+    });
+  } catch (err) {
+    console.error("Error saving job application:", err);
+    return res.status(500).json({
+      status: "error",
+      error: "Failed to save application",
+      details: err && err.message ? err.message : String(err),
+    });
+  }
+});
+
+/**
+ * Test endpoint to verify mail sending quickly.
+ * If SMTP env vars are not provided, this will use Nodemailer's
+ * Ethereal test account and return a preview URL.
+ */
 app.get("/test-email", async (_req, res) => {
   try {
     const mailOptions = {
@@ -168,15 +243,13 @@ app.get("/test-email", async (_req, res) => {
     return res.json({ status: "ok", previewUrl, messageId: info.messageId });
   } catch (err) {
     console.error("/test-email error:", err);
-    return res
-      .status(500)
-      .json({
-        status: "error",
-        error: err && err.message ? err.message : String(err),
-      });
+    return res.status(500).json({
+      status: "error",
+      error: err && err.message ? err.message : String(err),
+    });
   }
 });
 
 app.listen(port, () => {
-  console.log(`Contact API listening on http://localhost:${port}`);
+  console.log(`API listening on http://localhost:${port}`);
 });
