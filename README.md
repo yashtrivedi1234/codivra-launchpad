@@ -81,6 +81,37 @@ Codivra is a modern, full-stack web application designed to showcase a business 
 
 ---
 
+## Deployment on Render.com
+
+This project is configured for deployment on [Render.com](https://render.com) using a single repository for both frontend and backend.
+
+### Steps to Deploy
+
+1. **Push your code to GitHub/GitLab/Bitbucket.**
+2. **Create a new Blueprint (YAML) deploy on Render:**
+   - Go to the Render dashboard.
+   - Click "New +" → "Blueprint".
+   - Connect your repository.
+   - Render will detect the `render.yaml` at the root and set up both services (frontend and backend).
+3. **Set Environment Variables:**
+   - For each service, add required environment variables in the Render dashboard under the service's settings.
+   - Example: `MONGODB_URI`, `JWT_SECRET`, etc. for backend.
+4. **Deploy!**
+   - Click "Apply" to deploy both services.
+
+### File: `render.yaml`
+
+- Defines two services:
+  - `codivra-backend`: Node.js backend (runs from `backend/`)
+  - `codivra-frontend`: Static frontend (builds from `frontend/`)
+
+### Notes
+
+- Update the `buildCommand`, `startCommand`, and `envVars` in `render.yaml` as needed for your project.
+- For custom domains, SSL, or scaling, see Render's documentation.
+
+---
+
 ## Contact
 
 For questions or support, please contact the project maintainer.
