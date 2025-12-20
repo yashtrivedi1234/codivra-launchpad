@@ -1,8 +1,8 @@
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-// Default to backend dev server if no env override is provided.
-const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+// Use only env variable for API base URL. Must be set in .env files.
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl,
