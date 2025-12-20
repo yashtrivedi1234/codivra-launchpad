@@ -55,7 +55,7 @@ const BlogHeader = () => (
           <span className="text-primary-foreground font-bold text-lg">C</span>
         </div>
         <span className="text-xl font-bold text-foreground">
-          Codivra<span className="text-accent">.</span>
+          Codivra Solutions<span className="text-accent">.</span>
         </span>
       </a>
       <nav className="hidden md:flex items-center gap-6">

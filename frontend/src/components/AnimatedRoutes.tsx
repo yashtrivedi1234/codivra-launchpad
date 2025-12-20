@@ -1,6 +1,7 @@
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./PageTransition";
 import Index from "@/pages/Index.tsx";
@@ -21,9 +22,14 @@ import AdminCareers from "@/pages/admin/AdminCareers.tsx";
 import AdminContact from "@/pages/admin/AdminContact.tsx";
 import AdminTeam from "@/pages/admin/AdminTeam.tsx";
 import RequireAdmin from "./admin/RequireAdmin";
+import NotificationsPage from "@/pages/admin/Notifications";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [location.pathname]);
 
   return (
     <AnimatePresence mode="wait">
@@ -176,6 +182,16 @@ const AnimatedRoutes = () => {
             <RequireAdmin>
               <PageTransition>
                 <AdminTeam />
+              </PageTransition>
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin/notifications"
+          element={
+            <RequireAdmin>
+              <PageTransition>
+                <NotificationsPage />
               </PageTransition>
             </RequireAdmin>
           }

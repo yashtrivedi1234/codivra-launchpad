@@ -38,14 +38,14 @@ export const Contact = () => {
         e.currentTarget.reset();
       }
       toast({
-        title: "Message sent!",
+        title: "Contact Message Sent!",
         description:
-          result.message || "We'll get back to you within 24 hours.",
+          result.message || "Thank you for contacting Codivra Solutions. We'll get back to you within 24 hours.",
       });
     } catch (error: any) {
       console.error(error);
       setIsSubmitted(false);
-      let errorMsg = "Please check your inputs or reach us at codivrasolution@gmail.com.";
+      let errorMsg = "Please check your inputs or reach Codivra Solutions at codivrasolution@gmail.com.";
       const fieldErrors = error?.data?.issues?.fieldErrors;
       const firstFieldError = fieldErrors
         ? Object.values(fieldErrors).flat()[0]
@@ -55,7 +55,7 @@ export const Contact = () => {
       else if (error?.status) errorMsg = `Status: ${error.status}`;
       else if (error?.message) errorMsg = error.message;
       toast({
-        title: "Submission failed",
+        title: "Contact Submission Failed",
         description: errorMsg,
         variant: "destructive",
       });
@@ -86,7 +86,7 @@ export const Contact = () => {
               {/* Contact Details */}
               <div className="space-y-6">
                 {[
-                  { icon: Mail, label: "Email Us", value: "codivrasolution@gmail.com", href: "mailto:codivrasolution@gmail.com" },
+                  { icon: Mail, label: "Email Codivra Solutions", value: "codivrasolution@gmail.com", href: "mailto:codivrasolution@gmail.com" },
                   { icon: Phone, label: "Call Us", value: "+91 9452819739", href: "tel:+919452819739" },
                   { icon: MapPin, label: "Visit Us", value: "813, Vikas Nagar Colony, Khoobpur, Sitapur", href: null },
                 ].map((item, index) => (

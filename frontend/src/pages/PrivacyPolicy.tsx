@@ -21,7 +21,7 @@ const PrivacyPolicy = () => (
       <li>You can opt out of marketing communications</li>
     </ul>
     <h2 className="text-xl font-semibold mt-8 mb-2">Contact Us</h2>
-    <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:codivrasolution@gmail.com" className="text-accent underline">codivrasolution@gmail.com</a>.</p>
+    <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:codivrasolution@gmail.com" className="text-accent underline">codivrasolution@gmail.com</a>.<br/>© 2025 Codivra Solutions. All rights reserved.</p>
   </div>
 );
 

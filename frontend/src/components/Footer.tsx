@@ -62,7 +62,7 @@ export const Footer = () => {
                   <span className="font-bold text-lg">C</span>
                 </div>
                 <span className="text-xl font-bold">
-                  Codivra<span className="text-accent">.</span>
+                  Codivra Solutions<span className="text-accent">.</span>
                 </span>
               </Link>
               <p className="text-primary-foreground/70 text-sm leading-relaxed mb-6">

@@ -59,6 +59,6 @@ export const footerBottomLinks = [
   { id: 'contact', label: 'Contact', href: '/contact' },
 ];
 
-export const footerCopyright = '© 2025 Codivra. All rights reserved.';
-export const footerBrandName = 'Codivra';
+export const footerCopyright = '© 2025 Codivra Solutions. All rights reserved.';
+export const footerBrandName = 'Codivra Solutions';
 export const footerBrandDescription = 'Professional web solutions and digital services for your business success.';

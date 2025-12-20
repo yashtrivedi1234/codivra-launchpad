@@ -82,16 +82,16 @@ const ApplicationForm = ({ jobTitle, onClose }: ApplicationFormProps) => {
       }).unwrap();
 
       toast({
-        title: "Application Submitted!",
+        title: "Career Application Submitted!",
         description:
           result.message ||
-          "Thank you for applying. We'll review your application and get back to you soon.",
+          "Thank you for applying to Codivra Solutions Careers. We'll review your application and get back to you soon.",
       });
       onClose();
     } catch (error) {
       console.error("Error submitting application:", error);
       toast({
-        title: "Submission Failed",
+        title: "Career Application Failed",
         description:
           "There was an error submitting your application. Please try again.",
         variant: "destructive",
@@ -368,7 +368,7 @@ const Careers = () => {
                 A Place Where Ideas Thrive
               </h2>
               <p className="text-muted-foreground mb-6">
-                At Codivra, we foster an environment of innovation, collaboration, and continuous learning. 
+                At Codivra Solutions, we foster an environment of innovation, collaboration, and continuous learning. 
                 We believe that great ideas can come from anywhere, and we encourage every team member to contribute their unique perspective.
               </p>
               <p className="text-muted-foreground mb-6">

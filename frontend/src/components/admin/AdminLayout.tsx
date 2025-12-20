@@ -101,7 +101,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-black dark:text-white tracking-tight">
-                  Command Center
+                  Codivra Solutions
                 </h1>
                 <p className="text-sm text-black/50 dark:text-white/50 font-medium">
                   Analytics & Management
@@ -170,7 +170,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="hidden md:flex w-64 border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#141414] flex-col">
+        <aside className="hidden md:flex w-64 border-r border-black/5 dark:border-white/5 bg-white dark:bg-[#141414] flex-col overflow-hidden">
           <div className="p-6 border-b border-black/5 dark:border-white/5">
             <h2 className="text-sm font-bold text-black/60 dark:text-white/60 uppercase tracking-wider mb-4">
               Navigation
@@ -197,7 +197,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             </nav>
           </div>
 
-          <div className="p-6 flex-1 overflow-y-auto">
+          <div className="p-6 flex-1">
             <h3 className="text-xs font-bold text-black/40 dark:text-white/40 uppercase tracking-wider mb-3">
               Quick Links
             </h3>
@@ -229,7 +229,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           <div className="flex-1 overflow-y-auto">{children}</div>
 
           {/* Footer */}
-          <footer className="border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#141414] mt-auto">
+          <footer className="border-t border-black/5 dark:border-white/5 bg-white dark:bg-[#141414] mt-auto overflow-hidden">
             <div className="container mx-auto px-6 py-8">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                 <div>
@@ -303,7 +303,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <div className="border-t border-black/5 dark:border-white/5 pt-6">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-black/60 dark:text-white/60">
-                    © 2025 Codivra Admin. All rights reserved.
+                    © 2025 Codivra Solutions. All rights reserved.
                   </p>
                   <div className="flex gap-4">
                     <a href="#" className="text-sm text-black/60 dark:text-white/60 hover:text-blue-600 dark:hover:text-blue-400">

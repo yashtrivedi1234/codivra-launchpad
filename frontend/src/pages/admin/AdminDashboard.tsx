@@ -6,6 +6,11 @@ import {
   useAdminUpsertPageSectionMutation,
   useAdminDeletePageSectionMutation,
   PageSection,
+  useGetTeamQuery,
+  useGetServicesQuery,
+  useGetPortfolioQuery,
+  useGetBlogQuery,
+  useAdminListContactsQuery,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,6 +64,11 @@ const AdminDashboard = () => {
     key: string;
     data: string;
   } | null>(null);
+  const { data: teamData, isLoading: isLoadingTeam } = useGetTeamQuery();
+  const { data: servicesData, isLoading: isLoadingServices } = useGetServicesQuery();
+  const { data: portfolioData, isLoading: isLoadingPortfolio } = useGetPortfolioQuery();
+  const { data: blogData, isLoading: isLoadingBlog } = useGetBlogQuery();
+  const { data: contactsData, isLoading: isLoadingContacts } = useAdminListContactsQuery();
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Delete this application?")) return;
@@ -80,25 +90,41 @@ const AdminDashboard = () => {
     }
   };
 
-  // Sample data for charts
-  const applicationData = [
-    { month: "Jan", applications: 12, approved: 8 },
-    { month: "Feb", applications: 19, approved: 14 },
-    { month: "Mar", applications: 15, approved: 11 },
-    { month: "Apr", applications: 25, approved: 18 },
-    { month: "May", applications: 22, approved: 16 },
-    { month: "Jun", applications: 28, approved: 20 },
-  ];
+  // Dynamic data for charts
+  // Applications Trend: group job applications by month and count approved (if available)
+  const applicationData = (() => {
+    if (!data?.items) return [];
+    const byMonth = {};
+    data.items.forEach(app => {
+      if (!app.created_at) return;
+      const date = new Date(app.created_at);
+      const month = date.toLocaleString('default', { month: 'short' });
+      if (!byMonth[month]) byMonth[month] = { month, applications: 0, approved: 0 };
+      byMonth[month].applications += 1;
+      if (app.status === 'approved') byMonth[month].approved += 1;
+    });
+    // Sort by month order (Jan, Feb, ...)
+    const monthOrder = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return monthOrder
+      .map(m => byMonth[m] || { month: m, applications: 0, approved: 0 })
+      .slice(0, 6); // last 6 months
+  })();
 
-  const pageViewsData = [
-    { date: "Mon", views: 240, users: 120 },
-    { date: "Tue", views: 290, users: 150 },
-    { date: "Wed", views: 200, users: 110 },
-    { date: "Thu", views: 450, users: 280 },
-    { date: "Fri", views: 370, users: 200 },
-    { date: "Sat", views: 290, users: 170 },
-    { date: "Sun", views: 180, users: 100 },
-  ];
+  // Page Views: use contacts as a proxy for engagement (group by day of week)
+  const pageViewsData = (() => {
+    if (!contactsData?.items) return [];
+    const byDay = {};
+    contactsData.items.forEach(msg => {
+      if (!msg.created_at) return;
+      const date = new Date(msg.created_at);
+      const day = date.toLocaleString('en-US', { weekday: 'short' });
+      if (!byDay[day]) byDay[day] = { date: day, views: 0, users: 0 };
+      byDay[day].views += 1;
+      byDay[day].users += 1; // treat each contact as a user
+    });
+    const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+    return days.map(d => byDay[d] || { date: d, views: 0, users: 0 });
+  })();
 
   return (
     <AdminLayout>
@@ -246,68 +272,74 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Pages */}
+          {/* Team Members */}
           <div className="stat-card rounded-2xl p-6 animate-fade-in-up stagger-2">
             <div className="flex items-start justify-between mb-4">
               <div className="icon-gradient-green p-3 rounded-xl">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <TrendingUp className="w-4 h-4 text-green-600" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-black/60 dark:text-white/60 uppercase tracking-wide">
-                Pages
-              </p>
-              <p className="text-4xl metric-value text-black dark:text-white">
-                {pagesData?.sections?.length || 0}
-              </p>
-              <p className="text-xs trend-up flex items-center gap-1">
-                <span>↑ 5%</span>
-                <span className="text-black/40 dark:text-white/40 font-normal">vs last month</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Page Views */}
-          <div className="stat-card rounded-2xl p-6 animate-fade-in-up stagger-3">
-            <div className="flex items-start justify-between mb-4">
-              <div className="icon-gradient-orange p-3 rounded-xl">
-                <BarChart3 className="w-5 h-5 text-white" />
-              </div>
-              <TrendingUp className="w-4 h-4 text-green-600" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-black/60 dark:text-white/60 uppercase tracking-wide">
-                Page Views
-              </p>
-              <p className="text-4xl metric-value text-black dark:text-white">
-                2.3K
-              </p>
-              <p className="text-xs trend-up flex items-center gap-1">
-                <span>↑ 23%</span>
-                <span className="text-black/40 dark:text-white/40 font-normal">vs last month</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Active Users */}
-          <div className="stat-card rounded-2xl p-6 animate-fade-in-up stagger-4">
-            <div className="flex items-start justify-between mb-4">
-              <div className="icon-gradient-purple p-3 rounded-xl">
                 <Users className="w-5 h-5 text-white" />
               </div>
               <TrendingUp className="w-4 h-4 text-green-600" />
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium text-black/60 dark:text-white/60 uppercase tracking-wide">
-                Active Users
+                Team Members
               </p>
               <p className="text-4xl metric-value text-black dark:text-white">
-                482
+                {isLoadingTeam ? "..." : teamData?.items?.length || 0}
               </p>
-              <p className="text-xs trend-up flex items-center gap-1">
-                <span>↑ 8%</span>
-                <span className="text-black/40 dark:text-white/40 font-normal">vs last month</span>
+            </div>
+          </div>
+
+          {/* Services */}
+          <div className="stat-card rounded-2xl p-6 animate-fade-in-up stagger-3">
+            <div className="flex items-start justify-between mb-4">
+              <div className="icon-gradient-orange p-3 rounded-xl">
+                <Briefcase className="w-5 h-5 text-white" />
+              </div>
+              <TrendingUp className="w-4 h-4 text-green-600" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-black/60 dark:text-white/60 uppercase tracking-wide">
+                Services
+              </p>
+              <p className="text-4xl metric-value text-black dark:text-white">
+                {isLoadingServices ? "..." : servicesData?.items?.length || 0}
+              </p>
+            </div>
+          </div>
+
+          {/* Portfolio */}
+          <div className="stat-card rounded-2xl p-6 animate-fade-in-up stagger-4">
+            <div className="flex items-start justify-between mb-4">
+              <div className="icon-gradient-blue p-3 rounded-xl">
+                <BarChart3 className="w-5 h-5 text-white" />
+              </div>
+              <TrendingUp className="w-4 h-4 text-green-600" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-black/60 dark:text-white/60 uppercase tracking-wide">
+                Portfolio
+              </p>
+              <p className="text-4xl metric-value text-black dark:text-white">
+                {isLoadingPortfolio ? "..." : portfolioData?.items?.length || 0}
+              </p>
+            </div>
+          </div>
+
+          {/* Blog Posts */}
+          <div className="stat-card rounded-2xl p-6 animate-fade-in-up stagger-1">
+            <div className="flex items-start justify-between mb-4">
+              <div className="icon-gradient-purple p-3 rounded-xl">
+                <FileText className="w-5 h-5 text-white" />
+              </div>
+              <TrendingUp className="w-4 h-4 text-green-600" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-black/60 dark:text-white/60 uppercase tracking-wide">
+                Blog Posts
+              </p>
+              <p className="text-4xl metric-value text-black dark:text-white">
+                {isLoadingBlog ? "..." : blogData?.items?.length || 0}
               </p>
             </div>
           </div>
@@ -756,6 +788,75 @@ const AdminDashboard = () => {
             </div>
           )}
         </section>
+
+        {/* Recent Data Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          {/* Recent Job Applications */}
+          <div className="section-card rounded-2xl p-6">
+            <h3 className="text-lg font-bold mb-4 text-black dark:text-white">Recent Job Applications</h3>
+            <ul className="divide-y divide-black/10 dark:divide-white/10">
+              {(data?.items || []).slice(0, 5).map(app => (
+                <li key={app._id} className="py-2 flex flex-col">
+                  <span className="font-semibold text-black dark:text-white">{app.name}</span>
+                  <span className="text-xs text-black/50 dark:text-white/50">{app.job_title}</span>
+                </li>
+              ))}
+              {(!data?.items || data.items.length === 0) && <li className="py-2 text-black/40 dark:text-white/40">No applications</li>}
+            </ul>
+          </div>
+          {/* Recent Contact Messages */}
+          <div className="section-card rounded-2xl p-6">
+            <h3 className="text-lg font-bold mb-4 text-black dark:text-white">Recent Contacts</h3>
+            <ul className="divide-y divide-black/10 dark:divide-white/10">
+              {(contactsData?.items || []).slice(0, 5).map(msg => (
+                <li key={msg._id} className="py-2 flex flex-col">
+                  <span className="font-semibold text-black dark:text-white">{msg.name}</span>
+                  <span className="text-xs text-black/50 dark:text-white/50">{msg.email}</span>
+                </li>
+              ))}
+              {(!contactsData?.items || contactsData.items.length === 0) && <li className="py-2 text-black/40 dark:text-white/40">No messages</li>}
+            </ul>
+          </div>
+          {/* Recent Blog Posts */}
+          <div className="section-card rounded-2xl p-6">
+            <h3 className="text-lg font-bold mb-4 text-black dark:text-white">Recent Blog Posts</h3>
+            <ul className="divide-y divide-black/10 dark:divide-white/10">
+              {(blogData?.items || []).slice(0, 5).map(post => (
+                <li key={post._id} className="py-2 flex flex-col">
+                  <span className="font-semibold text-black dark:text-white">{post.title}</span>
+                  <span className="text-xs text-black/50 dark:text-white/50">{post.created_at ? new Date(post.created_at).toLocaleDateString() : ''}</span>
+                </li>
+              ))}
+              {(!blogData?.items || blogData.items.length === 0) && <li className="py-2 text-black/40 dark:text-white/40">No blog posts</li>}
+            </ul>
+          </div>
+          {/* Recent Portfolio Items */}
+          <div className="section-card rounded-2xl p-6">
+            <h3 className="text-lg font-bold mb-4 text-black dark:text-white">Recent Portfolio</h3>
+            <ul className="divide-y divide-black/10 dark:divide-white/10">
+              {(portfolioData?.items || []).slice(0, 5).map(item => (
+                <li key={item._id} className="py-2 flex flex-col">
+                  <span className="font-semibold text-black dark:text-white">{item.title}</span>
+                  <span className="text-xs text-black/50 dark:text-white/50">{item.created_at ? new Date(item.created_at).toLocaleDateString() : ''}</span>
+                </li>
+              ))}
+              {(!portfolioData?.items || portfolioData.items.length === 0) && <li className="py-2 text-black/40 dark:text-white/40">No portfolio items</li>}
+            </ul>
+          </div>
+          {/* Recent Team Members */}
+          <div className="section-card rounded-2xl p-6">
+            <h3 className="text-lg font-bold mb-4 text-black dark:text-white">Recent Team Members</h3>
+            <ul className="divide-y divide-black/10 dark:divide-white/10">
+              {(teamData?.items || []).slice(0, 5).map(member => (
+                <li key={member._id} className="py-2 flex flex-col">
+                  <span className="font-semibold text-black dark:text-white">{member.name}</span>
+                  <span className="text-xs text-black/50 dark:text-white/50">{member.role}</span>
+                </li>
+              ))}
+              {(!teamData?.items || teamData.items.length === 0) && <li className="py-2 text-black/40 dark:text-white/40">No team members</li>}
+            </ul>
+          </div>
+        </div>
 
       {/* Edit Modal */}
       {editing && (
