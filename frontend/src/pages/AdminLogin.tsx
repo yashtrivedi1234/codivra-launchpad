@@ -4,7 +4,6 @@ import { useAdminLoginMutation } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -38,55 +37,6 @@ const AdminLogin = () => {
       });
     }
   };
-
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:4000"}/api/auth/google`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token: credentialResponse.credential }),
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Google login failed");
-      }
-
-      const result = await response.json();
-
-      window.localStorage.setItem("admin_token", result.token);
-      window.localStorage.setItem("admin_email", result.user.email);
-
-      toast({
-        title: "Logged in",
-        description: "Welcome to the admin panel.",
-      });
-
-      navigate("/admin", { replace: true });
-    } catch (error: any) {
-      console.error("Google login failed:", error);
-      toast({
-        title: "Google login failed",
-        description: error.message || "Failed to login with Google",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleGoogleError = () => {
-    toast({
-      title: "Google login failed",
-      description: "Please try again",
-      variant: "destructive",
-    });
-  };
-
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
@@ -139,33 +89,6 @@ const AdminLogin = () => {
           </Button>
         </form>
 
-        {/* Google OAuth Login */}
-        {googleClientId && (
-          <div className="mt-6">
-            <div className="relative mb-4">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border"></span>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
-            <GoogleOAuthProvider clientId={googleClientId}>
-              <div className="flex justify-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleError}
-                  size="large"
-                  theme="outline"
-                  text="signin_with"
-                />
-              </div>
-            </GoogleOAuthProvider>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TermsOfService from "@/pages/TermsOfService";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./PageTransition";
@@ -176,6 +178,22 @@ const AnimatedRoutes = () => {
                 <AdminTeam />
               </PageTransition>
             </RequireAdmin>
+          }
+        />
+        <Route
+          path="/privacy-policy"
+          element={
+            <PageTransition>
+              <PrivacyPolicy />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/terms-of-service"
+          element={
+            <PageTransition>
+              <TermsOfService />
+            </PageTransition>
           }
         />
         <Route

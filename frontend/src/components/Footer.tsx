@@ -2,16 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Linkedin, Twitter, Facebook, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useSubmitSubscriptionMutation } from "@/lib/api";
+import { useSubmitSubscriptionMutation, useGetServicesQuery } from "@/lib/api";
 
 const footerLinks = {
-  services: [
-    { label: "Web Development", href: "/services" },
-    { label: "Custom Software", href: "/services" },
-    { label: "Graphic Design", href: "/services" },
-    { label: "SEO Optimization", href: "/services" },
-    { label: "Digital Marketing", href: "/services" },
-  ],
   company: [
     { label: "About Us", href: "/about" },
     { label: "Our Work", href: "/portfolio" },
@@ -20,14 +13,16 @@ const footerLinks = {
   ],
 };
 
-const socialLinks = [
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Instagram, href: "#", label: "Instagram" },
-];
 
 export const Footer = () => {
+  // Fetch admin-added services
+  const { data: servicesData, isLoading: servicesLoading, isError: servicesError } = useGetServicesQuery();
+  const socialLinks = [
+    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: Twitter, href: "#", label: "Twitter" },
+    { icon: Facebook, href: "#", label: "Facebook" },
+    { icon: Instagram, href: "#", label: "Instagram" },
+  ];
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
@@ -54,6 +49,7 @@ export const Footer = () => {
       setSubmitting(false);
     }
   };
+
   return (
     <footer className="bg-gradient-primary text-primary-foreground py-16">
       <div className="container mx-auto px-4">
@@ -87,20 +83,28 @@ export const Footer = () => {
               </div>
             </div>
 
-            {/* Services Links */}
+            {/* Services Links (dynamic) */}
             <div>
               <h4 className="font-semibold mb-4">Services</h4>
               <ul className="space-y-3">
-                {footerLinks.services.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      to={link.href}
-                      className="text-primary-foreground/70 hover:text-primary-foreground text-sm transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
+                {servicesLoading ? (
+                  <li className="text-primary-foreground/60 text-sm">Loading...</li>
+                ) : servicesError ? (
+                  <li className="text-primary-foreground/60 text-sm">Failed to load services</li>
+                ) : servicesData?.items?.length > 0 ? (
+                  servicesData.items.map((service) => (
+                    <li key={service._id}>
+                      <Link
+                        to={"/services"}
+                        className="text-primary-foreground/70 hover:text-primary-foreground text-sm transition-colors"
+                      >
+                        {service.title}
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-primary-foreground/60 text-sm">No services available</li>
+                )}
               </ul>
             </div>
 
@@ -153,12 +157,12 @@ export const Footer = () => {
               © {new Date().getFullYear()} Codivra Solution. All rights reserved.
             </p>
             <div className="flex gap-6">
-              <a href="#" className="text-primary-foreground/60 hover:text-primary-foreground text-sm transition-colors">
+              <Link to="/privacy-policy" className="text-primary-foreground/60 hover:text-primary-foreground text-sm transition-colors">
                 Privacy Policy
-              </a>
-              <a href="#" className="text-primary-foreground/60 hover:text-primary-foreground text-sm transition-colors">
+              </Link>
+              <Link to="/terms-of-service" className="text-primary-foreground/60 hover:text-primary-foreground text-sm transition-colors">
                 Terms of Service
-              </a>
+              </Link>
             </div>
           </div>
         </div>

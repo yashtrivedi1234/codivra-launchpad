@@ -1,3 +1,42 @@
+// Send confirmation email to the user after contact form submission
+export async function sendContactConfirmationEmail(payload) {
+  if (!isEmailConfigured) {
+    console.log(
+      `📧 [email] Would send confirmation email to user (email not configured): ${payload.email}`
+    );
+    return {
+      success: true,
+      message: "Confirmation email queued (service not configured)",
+    };
+  }
+
+  const mailOptions = {
+    from: EMAIL_FROM,
+    to: payload.email,
+    subject: `Thank you for contacting ${BRAND.name}`,
+    text: `Hi ${payload.name},\n\nThank you for reaching out to ${BRAND.name}! We have received your message and will get back to you soon.\n\nYour message:\n${payload.message}\n\nBest regards,\n${BRAND.name} Team`,
+    html: renderBaseEmail({
+      preheader: `Thank you for contacting ${BRAND.name}`,
+      title: `Thank you, ${payload.name}!`,
+      bodyHtml: `
+        <p>Hi <strong>${payload.name}</strong>,</p>
+        <p>Thank you for reaching out to <strong>${
+          BRAND.name
+        }</strong>! We have received your message and will get back to you soon.</p>
+        <p style="margin:12px 0 0 0"><strong>Your message:</strong></p>
+        <div>${payload.message.replace(/\n/g, "<br/>")}</div>
+        <p style="margin-top:18px">Best regards,<br/>${BRAND.name} Team</p>
+      `,
+      cta: BRAND.website
+        ? { label: `Visit ${BRAND.name}`, url: BRAND.website }
+        : null,
+    }),
+  };
+
+  if (transporter) {
+    return transporter.sendMail(mailOptions);
+  }
+}
 import nodemailer from "nodemailer";
 import { EMAIL_FROM, EMAIL_TO } from "../config/env.mjs";
 

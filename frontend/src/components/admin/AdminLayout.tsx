@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { ReactNode } from "react";
+import AdminNotifications from "./AdminNotifications";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -43,12 +44,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     { name: "Contact", path: "/admin/contact", icon: MessageSquare },
   ];
 
-  const notifications = [
-    { id: 1, title: "New Application", message: "You have a new job application", time: "5 min ago", read: false },
-    { id: 2, title: "Page Updated", message: "Services page has been modified", time: "1 hour ago", read: false },
-    { id: 3, title: "Message Received", message: "New contact form submission", time: "2 hours ago", read: true },
-    { id: 4, title: "System Alert", message: "Scheduled maintenance completed", time: "1 day ago", read: true },
-  ];
+
 
   const email = typeof window !== "undefined" ? window.localStorage.getItem("admin_email") : null;
 
@@ -101,7 +97,6 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <div className="relative">
                 <div className="absolute inset-0 icon-gradient-blue rounded-xl blur-sm opacity-60"></div>
                 <div className="relative icon-gradient-blue p-2.5 rounded-xl">
-                  <Activity className="w-6 h-6 text-white" />
                 </div>
               </div>
               <div>
@@ -126,52 +121,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 </span>
               </div>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="relative p-2.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300">
-                    <Bell className="w-5 h-5 text-black dark:text-white" />
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-80">
-                  <DropdownMenuLabel className="flex items-center justify-between">
-                    <span className="text-sm font-bold">Notifications</span>
-                    <span className="text-xs bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 px-2 py-1 rounded-full font-semibold">
-                      {notifications.filter((n) => !n.read).length} New
-                    </span>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <div className="max-h-96 overflow-y-auto">
-                    {notifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={`px-4 py-3 border-b border-black/5 dark:border-white/5 last:border-b-0 cursor-pointer transition-all hover:bg-black/3 dark:hover:bg-white/5 ${
-                          !notification.read ? "bg-blue-50/50 dark:bg-blue-950/20" : ""
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`w-2 h-2 rounded-full mt-2 ${notification.read ? "bg-transparent" : "bg-blue-500"}`}></div>
-                          <div className="flex-1">
-                            <p className="text-sm font-semibold text-black dark:text-white">
-                              {notification.title}
-                            </p>
-                            <p className="text-xs text-black/60 dark:text-white/60 mt-1">
-                              {notification.message}
-                            </p>
-                            <p className="text-xs text-black/40 dark:text-white/40 mt-2">
-                              {notification.time}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <DropdownMenuSeparator />
-                  <button className="w-full text-center px-4 py-2 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                    View All Notifications
-                  </button>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <AdminNotifications />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

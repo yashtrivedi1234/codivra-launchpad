@@ -8,6 +8,7 @@
     "dev": "node --watch src/server.mjs",
     "start": "node src/server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
+    
   },
   "keywords": [
     "express",

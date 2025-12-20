@@ -1,10 +1,13 @@
+
 import { motion } from "framer-motion";
 import { Target, Users, Lightbulb } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 import { useGetPageQuery } from "@/lib/api";
+import { useTeamCount } from "@/hooks/use-team-count";
 
 export const About = () => {
   const { data } = useGetPageQuery("about");
+  const { count, isLoading } = useTeamCount();
   const main = data?.sections.find((s) => s.key === "main")?.data || {};
 
   const title: string =
@@ -20,7 +23,7 @@ export const About = () => {
   const stats =
     main.stats || [
       { value: "Dec 2025", label: "Founded" },
-      { value: "9+", label: "Core Team" },
+      { value: isLoading ? "..." : `${count}`, label: "Core Team" },
       { value: "10+", label: "Projects Delivered" },
       { value: "Direct", label: "Client Support" },
     ];
@@ -86,7 +89,6 @@ export const About = () => {
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 6, repeat: Infinity }}
               />
-              
               {/* Stats Grid */}
               <div className="relative z-10 grid grid-cols-2 gap-6 text-primary-foreground">
                 {stats.map((stat: { value: string; label: string }, index: number) => (

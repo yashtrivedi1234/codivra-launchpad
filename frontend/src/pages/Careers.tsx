@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { MapPin, Clock, Briefcase, ArrowRight, Users, Heart, Zap, Trophy, ChevronDown, ChevronUp, X } from "lucide-react";
+import { useTeamCount } from "@/hooks/use-team-count";
+import { MapPin, Clock, Briefcase, ArrowRight, Users, Heart, Zap, Trophy, ChevronDown, ChevronUp, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,9 +8,20 @@ import { Label } from "@/components/ui/label";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AnimatedSection, AnimatedStagger, AnimatedItem } from "@/components/AnimatedSection";
-import { useSubmitApplicationMutation } from "@/lib/api";
+import { useGetJobsQuery, useSubmitApplicationMutation } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
+
+type JobCardData = {
+  id: string;
+  title: string;
+  department: string;
+  location: string;
+  type: string;
+  description: string;
+  requirements: string[];
+  responsibilities: string[];
+};
 
 const benefits = [
   {
@@ -34,108 +46,7 @@ const benefits = [
   }
 ];
 
-const jobListings = [
-  {
-    id: 1,
-    title: "Senior Full Stack Developer",
-    department: "Engineering",
-    location: "Remote / Hybrid",
-    type: "Full-time",
-    description: "We're looking for an experienced Full Stack Developer to join our engineering team and help build scalable web applications.",
-    requirements: [
-      "5+ years of experience in web development",
-      "Proficiency in React, Node.js, and TypeScript",
-      "Experience with cloud platforms (AWS/GCP)",
-      "Strong problem-solving skills"
-    ],
-    responsibilities: [
-      "Design and implement new features",
-      "Code review and mentoring junior developers",
-      "Collaborate with product and design teams",
-      "Optimize application performance"
-    ]
-  },
-  {
-    id: 2,
-    title: "UI/UX Designer",
-    department: "Design",
-    location: "Remote",
-    type: "Full-time",
-    description: "Join our design team to create beautiful, user-centered interfaces for our clients' products.",
-    requirements: [
-      "3+ years of UI/UX design experience",
-      "Proficiency in Figma and design systems",
-      "Portfolio showcasing web and mobile designs",
-      "Understanding of accessibility standards"
-    ],
-    responsibilities: [
-      "Create wireframes, prototypes, and final designs",
-      "Conduct user research and usability testing",
-      "Maintain and evolve design systems",
-      "Collaborate with developers on implementation"
-    ]
-  },
-  {
-    id: 3,
-    title: "Digital Marketing Specialist",
-    department: "Marketing",
-    location: "Hybrid",
-    type: "Full-time",
-    description: "Help our clients grow their online presence through strategic digital marketing campaigns.",
-    requirements: [
-      "3+ years in digital marketing",
-      "Experience with SEO, SEM, and social media",
-      "Google Analytics and Ads certification",
-      "Data-driven mindset"
-    ],
-    responsibilities: [
-      "Develop and execute marketing strategies",
-      "Manage paid advertising campaigns",
-      "Analyze and report on campaign performance",
-      "Optimize conversion rates"
-    ]
-  },
-  {
-    id: 4,
-    title: "DevOps Engineer",
-    department: "Engineering",
-    location: "Remote",
-    type: "Full-time",
-    description: "Build and maintain our cloud infrastructure to ensure reliable and scalable deployments.",
-    requirements: [
-      "4+ years of DevOps experience",
-      "Strong knowledge of Docker and Kubernetes",
-      "Experience with CI/CD pipelines",
-      "AWS or GCP certification preferred"
-    ],
-    responsibilities: [
-      "Manage cloud infrastructure",
-      "Implement and maintain CI/CD pipelines",
-      "Monitor system performance and security",
-      "Automate deployment processes"
-    ]
-  },
-  {
-    id: 5,
-    title: "Project Manager",
-    department: "Operations",
-    location: "Hybrid",
-    type: "Full-time",
-    description: "Lead cross-functional teams to deliver successful projects on time and within budget.",
-    requirements: [
-      "5+ years of project management experience",
-      "PMP or Agile certification",
-      "Experience in software development projects",
-      "Excellent communication skills"
-    ],
-    responsibilities: [
-      "Plan and manage project timelines",
-      "Coordinate with clients and stakeholders",
-      "Identify and mitigate project risks",
-      "Ensure quality deliverables"
-    ]
-  }
-];
+// No fallback listings: only admin-published jobs will show.
 
 interface ApplicationFormProps {
   jobTitle: string;
@@ -288,7 +199,7 @@ const ApplicationForm = ({ jobTitle, onClose }: ApplicationFormProps) => {
   );
 };
 
-const JobCard = ({ job, onApply }: { job: typeof jobListings[0]; onApply: (title: string) => void }) => {
+const JobCard = ({ job, onApply }: { job: JobCardData; onApply: (title: string) => void }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -359,13 +270,27 @@ const JobCard = ({ job, onApply }: { job: typeof jobListings[0]; onApply: (title
 };
 
 const Careers = () => {
+  const { data, isLoading: isJobsLoading, isFetching: isJobsFetching } = useGetJobsQuery();
   const [selectedDepartment, setSelectedDepartment] = useState("All");
   const [applicationJob, setApplicationJob] = useState<string | null>(null);
-  const departments = ["All", ...Array.from(new Set(jobListings.map(job => job.department)))];
-  
-  const filteredJobs = selectedDepartment === "All" 
-    ? jobListings 
-    : jobListings.filter(job => job.department === selectedDepartment);
+  const jobsFromApi: JobCardData[] =
+    data?.items?.map((job) => ({
+      id: job._id,
+      title: job.title,
+      department: job.department,
+      location: job.location,
+      type: job.type,
+      description: job.description,
+      requirements: job.requirements || [],
+      responsibilities: job.responsibilities || [],
+    })) || [];
+
+  const jobs = jobsFromApi;
+  const departments = ["All", ...Array.from(new Set(jobs.map((job) => job.department)))].filter(Boolean);
+
+  const filteredJobs = selectedDepartment === "All"
+    ? jobs
+    : jobs.filter((job) => job.department === selectedDepartment);
 
   return (
     <div className="min-h-screen">
@@ -452,8 +377,15 @@ const Careers = () => {
               </p>
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <div className="text-3xl font-bold text-accent mb-1">50+</div>
-                  <div className="text-muted-foreground text-sm">Team Members</div>
+                  {(() => {
+                    const { count, isLoading } = useTeamCount();
+                    return (
+                      <>
+                        <div className="text-3xl font-bold text-accent mb-1">{isLoading ? "..." : count}</div>
+                        <div className="text-muted-foreground text-sm">Team Members</div>
+                      </>
+                    );
+                  })()}
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-accent mb-1">12</div>
@@ -527,13 +459,25 @@ const Careers = () => {
             ))}
           </AnimatedSection>
 
+          {(isJobsLoading || isJobsFetching) && (
+            <div className="flex justify-center py-6">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            </div>
+          )}
+
+          {!isJobsLoading && !isJobsFetching && !jobsFromApi.length && (
+            <p className="text-center text-muted-foreground text-sm mb-6">
+              No openings are live right now. Please check back soon.
+            </p>
+          )}
+
           <AnimatedStagger className="space-y-6 max-w-4xl mx-auto">
             {filteredJobs.map((job) => (
               <JobCard key={job.id} job={job} onApply={setApplicationJob} />
             ))}
           </AnimatedStagger>
 
-          {filteredJobs.length === 0 && (
+          {!isJobsLoading && !isJobsFetching && filteredJobs.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No open positions in this department at the moment.</p>
             </div>

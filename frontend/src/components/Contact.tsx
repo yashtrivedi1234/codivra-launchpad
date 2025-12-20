@@ -6,13 +6,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, Send, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AnimatedSection } from "./AnimatedSection";
-import { useSubmitContactMutation } from "@/lib/api";
+
+import { useSubmitContactMutation, useGetServicesQuery } from "@/lib/api";
 
 export const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
   const [submitContact] = useSubmitContactMutation();
+  // Fetch services from backend (must be inside component)
+  const { data: servicesData, isLoading: servicesLoading, isError: servicesError } = useGetServicesQuery();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,19 +33,30 @@ export const Contact = () => {
       const result = await submitContact(payload).unwrap();
 
       setIsSubmitted(true);
-      e.currentTarget.reset();
+      // Only reset the form if it still exists
+      if (e.currentTarget && typeof e.currentTarget.reset === "function") {
+        e.currentTarget.reset();
+      }
       toast({
         title: "Message sent!",
         description:
           result.message || "We'll get back to you within 24 hours.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       setIsSubmitted(false);
+      let errorMsg = "Please check your inputs or reach us at codivrasolution@gmail.com.";
+      const fieldErrors = error?.data?.issues?.fieldErrors;
+      const firstFieldError = fieldErrors
+        ? Object.values(fieldErrors).flat()[0]
+        : null;
+      if (firstFieldError) errorMsg = String(firstFieldError);
+      else if (error?.data?.error) errorMsg = error.data.error;
+      else if (error?.status) errorMsg = `Status: ${error.status}`;
+      else if (error?.message) errorMsg = error.message;
       toast({
-        title: "Something went wrong",
-        description:
-          "Please try again or reach us at codivrasolution@gmail.com.",
+        title: "Submission failed",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -130,9 +144,11 @@ export const Contact = () => {
                           name="name"
                           placeholder="John Doe"
                           required
+                          minLength={2}
                           className="bg-background"
                           disabled={isSubmitting}
                         />
+                        <p className="mt-1 text-xs text-muted-foreground">At least 2 characters</p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-foreground mb-2 block">
@@ -157,14 +173,16 @@ export const Contact = () => {
                         name="service"
                         className="w-full h-10 px-3 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                         required
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || servicesLoading || servicesError}
                       >
-                        <option value="">Select a service</option>
-                        <option value="web">Web Development</option>
-                        <option value="software">Custom Software</option>
-                        <option value="design">Graphic Design</option>
-                        <option value="seo">SEO Optimization</option>
-                        <option value="marketing">Digital Marketing</option>
+                        <option value="">{servicesLoading ? "Loading services..." : servicesError ? "Failed to load services" : "Select a service"}</option>
+                        {servicesData?.items?.length > 0 ? (
+                          servicesData.items.map((service) => (
+                            <option key={service._id} value={service.title}>{service.title}</option>
+                          ))
+                        ) : !servicesLoading && !servicesError ? (
+                          <option value="" disabled>No services available</option>
+                        ) : null}
                       </select>
                     </div>
 
@@ -177,9 +195,11 @@ export const Contact = () => {
                         placeholder="Tell us about your project..."
                         rows={5}
                         required
+                        minLength={10}
                         className="bg-background resize-none"
                         disabled={isSubmitting}
                       />
+                      <p className="mt-1 text-xs text-muted-foreground">Minimum 10 characters</p>
                     </div>
 
                     <Button type="submit" variant="accent" size="lg" className="w-full" disabled={isSubmitting}>

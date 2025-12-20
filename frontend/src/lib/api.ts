@@ -1,7 +1,43 @@
+import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Default to backend dev server if no env override is provided.
 const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl,
+  prepareHeaders: (headers) => {
+    const token = typeof window !== "undefined"
+      ? window.localStorage.getItem("admin_token")
+      : null;
+
+    if (token) {
+      headers.set("authorization", `Bearer ${token}`);
+    }
+
+    return headers;
+  },
+});
+
+const baseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+  args,
+  api,
+  extraOptions
+) => {
+  const result = await rawBaseQuery(args, api, extraOptions);
+
+  // If unauthorized, clear token and send user to admin login
+  if (result.error?.status === 401 && typeof window !== "undefined") {
+    window.localStorage.removeItem("admin_token");
+    window.localStorage.removeItem("admin_email");
+
+    if (window.location.pathname.startsWith("/admin")) {
+      window.location.href = "/admin/login";
+    }
+  }
+
+  return result;
+};
 
 export interface ContactPayload {
   name: string;
@@ -9,6 +45,17 @@ export interface ContactPayload {
   service: string;
   message: string;
   phone?: string;
+}
+
+export interface ContactSubmission {
+  _id: string;
+  name: string;
+  email: string;
+  service: string;
+  message: string;
+  phone?: string;
+  read?: boolean;
+  created_at?: string;
 }
 
 export interface CareersApplicationPayload {
@@ -42,6 +89,21 @@ export interface JobApplication {
   portfolio_url?: string | null;
   cover_letter?: string | null;
   created_at?: string;
+}
+
+export interface JobPosting {
+  _id: string;
+  title: string;
+  department: string;
+  location: string;
+  type: string;
+  description: string;
+  requirements: string[];
+  responsibilities: string[];
+  is_active?: boolean;
+  order?: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface PageSection {
@@ -110,21 +172,8 @@ export interface SubscriptionPayload {
 
 export const api = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    baseUrl,
-    prepareHeaders: (headers) => {
-      const token = typeof window !== "undefined"
-        ? window.localStorage.getItem("admin_token")
-        : null;
-
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-
-      return headers;
-    },
-  }),
-  tagTypes: ["JobApplications", "Pages", "Services", "Team", "Portfolio", "Blog"],
+  baseQuery,
+  tagTypes: ["JobApplications", "Jobs", "Pages", "Services", "Team", "Portfolio", "Blog"],
   endpoints: (builder) => ({
     submitContact: builder.mutation<
       { status: string; message?: string },
@@ -135,6 +184,53 @@ export const api = createApi({
         method: "POST",
         body,
       }),
+    }),
+    adminListContacts: builder.query<{ items: ContactSubmission[]; success?: boolean }, void>({
+      query: () => ({
+        url: "/api/admin/contacts",
+        method: "GET",
+      }),
+      providesTags: ["Pages"],
+    }),
+    adminDeleteContact: builder.mutation<{ success: boolean }, string>({
+      query: (id) => ({
+        url: `/api/admin/contacts/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          api.util.updateQueryData("adminListContacts", undefined, (draft: any) => {
+            draft.items = draft.items.filter((c: ContactSubmission) => c._id !== id);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
+    }),
+    adminToggleContactRead: builder.mutation<
+      { success: boolean; data: ContactSubmission },
+      string
+    >({
+      query: (id) => ({
+        url: `/api/admin/contacts/${id}/toggle-read`,
+        method: "PUT",
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          api.util.updateQueryData("adminListContacts", undefined, (draft: any) => {
+            const item = draft.items.find((c: ContactSubmission) => c._id === id);
+            if (item) item.read = !item.read;
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
     }),
     submitApplication: builder.mutation<
       { status: string; message?: string; id?: string },
@@ -172,6 +268,50 @@ export const api = createApi({
       }),
       invalidatesTags: (result, error, id) =>
         result && !error ? [{ type: "JobApplications", id }] : [],
+    }),
+    // Careers job postings
+    getJobs: builder.query<{ items: JobPosting[] }, void>({
+      query: () => ({
+        url: "/api/careers/jobs",
+        method: "GET",
+      }),
+      providesTags: ["Jobs"],
+    }),
+    adminListJobs: builder.query<{ items: JobPosting[] }, void>({
+      query: () => ({
+        url: "/api/admin/careers/jobs",
+        method: "GET",
+      }),
+      providesTags: ["Jobs"],
+    }),
+    createJob: builder.mutation<
+      { status: string; message: string; data: JobPosting },
+      Omit<JobPosting, "_id" | "created_at" | "updated_at">
+    >({
+      query: (body) => ({
+        url: "/api/admin/careers/jobs",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Jobs"],
+    }),
+    updateJob: builder.mutation<
+      { status: string; message: string; data: JobPosting },
+      { id: string; data: Partial<Omit<JobPosting, "_id" | "created_at" | "updated_at">> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/api/admin/careers/jobs/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Jobs"],
+    }),
+    deleteJob: builder.mutation<{ status: string; message?: string }, string>({
+      query: (id) => ({
+        url: `/api/admin/careers/jobs/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Jobs"],
     }),
     getPage: builder.query<{ page: string; sections: PageSection[] }, string>({
       query: (page) => ({
@@ -506,10 +646,18 @@ export const api = createApi({
 
 export const {
   useSubmitContactMutation,
+  useAdminListContactsQuery,
+  useAdminDeleteContactMutation,
+  useAdminToggleContactReadMutation,
   useSubmitApplicationMutation,
   useAdminLoginMutation,
   useGetJobApplicationsQuery,
   useDeleteJobApplicationMutation,
+  useGetJobsQuery,
+  useAdminListJobsQuery,
+  useCreateJobMutation,
+  useUpdateJobMutation,
+  useDeleteJobMutation,
   useGetPageQuery,
   useAdminListPagesQuery,
   useAdminUpsertPageSectionMutation,

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Shield, Clock, Headphones, Award, Zap, Heart } from "lucide-react";
 import { AnimatedSection, AnimatedStagger, AnimatedItem } from "./AnimatedSection";
+import { useTeamCount } from "@/hooks/use-team-count";
 
 const reasons = [
   {
@@ -35,9 +36,9 @@ const reasons = [
   },
 ];
 
-const stats = [
+// Dynamic stats, team count will be injected below
+const staticStats = [
   { value: "Dec 2025", label: "Founded" },
-  { value: "9+", label: "Core Team Members" },
   { value: "10+", label: "Projects Delivered" },
   { value: "100%", label: "Client Commitment" },
 ];
@@ -58,6 +59,13 @@ const services = [
 ];
 
 export const WhyChooseUs = () => {
+  const { count, isLoading } = useTeamCount();
+  // Insert the dynamic team count as the second stat
+  const stats = [
+    { value: "Dec 2025", label: "Founded" },
+    { value: isLoading ? "..." : `${count}`, label: "Core Team Members" },
+    ...staticStats,
+  ].slice(0, 4); // Ensure only 4 stats
   return (
     <section id="why-us" className="py-24 bg-gradient-subtle">
       <div className="container mx-auto px-4">
