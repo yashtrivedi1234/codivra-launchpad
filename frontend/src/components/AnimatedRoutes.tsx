@@ -1,18 +1,23 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./PageTransition";
-import Index from "@/pages/Index";
-import Services from "@/pages/Services";
-import About from "@/pages/About";
-import Pricing from "@/pages/Pricing";
-import Portfolio from "@/pages/Portfolio";
-import Contact from "@/pages/Contact";
-import Blog from "@/pages/Blog";
-import Careers from "@/pages/Careers";
-import NotFound from "@/pages/NotFound";
-import AdminLogin from "@/pages/AdminLogin";
-import AdminSignup from "@/pages/AdminSignup";
-import AdminDashboard from "@/pages/AdminDashboard";
+import Index from "@/pages/Index.tsx";
+import Services from "@/pages/Services.tsx";
+import About from "@/pages/About.tsx";
+import Pricing from "@/pages/Pricing.tsx";
+import Portfolio from "@/pages/Portfolio.tsx";
+import Contact from "@/pages/Contact.tsx";
+import Blog from "@/pages/Blog.tsx";
+import Careers from "@/pages/Careers.tsx";
+import NotFound from "@/pages/NotFound.tsx";
+import AdminLogin from "@/pages/AdminLogin.tsx";
+import AdminDashboard from "@/pages/admin/AdminDashboard.tsx";
+import AdminServices from "@/pages/admin/AdminServices.tsx";
+import AdminPortfolio from "@/pages/admin/AdminPortfolio.tsx";
+import AdminBlog from "@/pages/admin/AdminBlog.tsx";
+import AdminCareers from "@/pages/admin/AdminCareers.tsx";
+import AdminContact from "@/pages/admin/AdminContact.tsx";
+import AdminTeam from "@/pages/admin/AdminTeam.tsx";
 import RequireAdmin from "./admin/RequireAdmin";
 
 const AnimatedRoutes = () => {
@@ -94,19 +99,81 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path="/admin/signup"
-          element={
-            <PageTransition>
-              <AdminSignup />
-            </PageTransition>
-          }
-        />
-        <Route
           path="/admin"
           element={
             <RequireAdmin>
               <PageTransition>
                 <AdminDashboard />
+              </PageTransition>
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <RequireAdmin>
+              <PageTransition>
+                <AdminDashboard />
+              </PageTransition>
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin/services"
+          element={
+            <RequireAdmin>
+              <PageTransition>
+                <AdminServices />
+              </PageTransition>
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin/portfolio"
+          element={
+            <RequireAdmin>
+              <PageTransition>
+                <AdminPortfolio />
+              </PageTransition>
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin/blog"
+          element={
+            <RequireAdmin>
+              <PageTransition>
+                <AdminBlog />
+              </PageTransition>
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin/careers"
+          element={
+            <RequireAdmin>
+              <PageTransition>
+                <AdminCareers />
+              </PageTransition>
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin/contact"
+          element={
+            <RequireAdmin>
+              <PageTransition>
+                <AdminContact />
+              </PageTransition>
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin/team"
+          element={
+            <RequireAdmin>
+              <PageTransition>
+                <AdminTeam />
               </PageTransition>
             </RequireAdmin>
           }

@@ -13,7 +13,10 @@ const RequireAdmin = ({ children }: Props) => {
       ? window.localStorage.getItem("admin_token")
       : null;
 
-  if (!token) {
+  // Allow access if token exists OR if it's development mode (demo access)
+  const isDemoMode = import.meta.env.DEV;
+
+  if (!token && !isDemoMode) {
     return (
       <Navigate
         to="/admin/login"

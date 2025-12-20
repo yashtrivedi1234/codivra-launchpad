@@ -1,9 +1,6 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import {
-  adminLoginSchema,
-  adminSignupSchema,
-} from "../validation/admin.schema.mjs";
+import { adminLoginSchema } from "../validation/admin.schema.mjs";
 import {
   ADMIN_EMAIL,
   ADMIN_PASSWORD,
@@ -12,6 +9,8 @@ import {
 } from "../config/auth.mjs";
 import { getCollection } from "../db/mongo.mjs";
 import { ObjectId } from "mongodb";
+
+const ADMIN_EMAIL_NORMALIZED = (ADMIN_EMAIL || "").toLowerCase();
 
 async function createTokenForAdmin(admin) {
   const payload = {
@@ -40,87 +39,39 @@ async function createTokenForAdmin(admin) {
 export async function seedDefaultAdmin() {
   try {
     const collection = await getCollection("admins");
-    const existing = await collection.findOne({ email: ADMIN_EMAIL });
+    const existing = await collection.findOne({
+      email: ADMIN_EMAIL_NORMALIZED,
+    });
 
     if (!existing) {
       const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
       await collection.insertOne({
-        email: ADMIN_EMAIL,
+        email: ADMIN_EMAIL_NORMALIZED,
         name: "Admin",
         passwordHash,
         created_at: new Date().toISOString(),
         is_active: true,
       });
-      console.log(`✅ [Admin] Default admin created: ${ADMIN_EMAIL}`);
+      console.log(
+        `✅ [Admin] Default admin created: ${ADMIN_EMAIL_NORMALIZED}`
+      );
     } else {
-      console.log(`✅ [Admin] Admin user already exists: ${ADMIN_EMAIL}`);
+      if (existing.email !== ADMIN_EMAIL_NORMALIZED) {
+        await collection.updateOne(
+          { _id: existing._id },
+          { $set: { email: ADMIN_EMAIL_NORMALIZED } }
+        );
+        console.log(
+          `✅ [Admin] Normalized admin email to: ${ADMIN_EMAIL_NORMALIZED}`
+        );
+      } else {
+        console.log(
+          `✅ [Admin] Admin user already exists: ${ADMIN_EMAIL_NORMALIZED}`
+        );
+      }
     }
   } catch (err) {
     console.error("❌ [Admin] Failed to seed default admin:", err);
-  }
-}
-
-export async function handleAdminSignup(req, res) {
-  const parsed = adminSignupSchema.safeParse(req.body);
-
-  if (!parsed.success) {
-    return res.status(400).json({
-      success: false,
-      error: "Invalid input",
-      issues: parsed.error.flatten(),
-    });
-  }
-
-  const { email, password, name } = parsed.data;
-
-  try {
-    const collection = await getCollection("admins");
-
-    // Check if admin already exists
-    const existing = await collection.findOne({ email });
-    if (existing) {
-      return res.status(409).json({
-        success: false,
-        error: "Admin with this email already exists",
-      });
-    }
-
-    // Hash password
-    const passwordHash = await bcrypt.hash(password, 10);
-
-    // Insert new admin
-    const insertResult = await collection.insertOne({
-      email,
-      name,
-      passwordHash,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      is_active: true,
-      last_login: null,
-    });
-
-    const admin = {
-      _id: insertResult.insertedId,
-      email,
-      name,
-    };
-
-    const { token, user } = await createTokenForAdmin(admin);
-
-    console.log(`✅ [Admin] New admin created: ${email}`);
-
-    return res.status(201).json({
-      success: true,
-      message: "Admin account created successfully",
-      token,
-      user,
-    });
-  } catch (err) {
-    console.error("❌ [Admin] Signup error:", err);
-    return res.status(500).json({
-      success: false,
-      error: "Failed to create admin account",
-    });
   }
 }
 
@@ -171,26 +122,22 @@ export async function handleAdminLogin(req, res) {
       console.log(`✅ [Admin] Login successful: ${email}`);
 
       return res.json({
-        success: true,
-        message: "Login successful",
         token,
         user,
       });
     }
 
     // Fallback to env-based admin if no DB user exists
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    if (email === ADMIN_EMAIL_NORMALIZED && password === ADMIN_PASSWORD) {
       const { token, user } = await createTokenForAdmin({
         _id: null,
-        email: ADMIN_EMAIL,
+        email: ADMIN_EMAIL_NORMALIZED,
         name: "Admin",
       });
 
       console.log(`✅ [Admin] Login successful (env fallback): ${email}`);
 
       return res.json({
-        success: true,
-        message: "Login successful (env fallback)",
         token,
         user,
       });

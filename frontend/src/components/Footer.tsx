@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Linkedin, Twitter, Facebook, Instagram } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useSubmitSubscriptionMutation } from "@/lib/api";
 
 const footerLinks = {
   services: [
@@ -25,6 +28,32 @@ const socialLinks = [
 ];
 
 export const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const { toast } = useToast();
+  const [submitSubscription] = useSubmitSubscriptionMutation();
+
+  const onSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await submitSubscription({ email: email.trim(), source: "footer" }).unwrap();
+      setEmail("");
+      toast({
+        title: "Subscribed",
+        description: res.message || "Thanks for subscribing!",
+      });
+    } catch (err) {
+      toast({
+        title: "Subscription failed",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
   return (
     <footer className="bg-gradient-primary text-primary-foreground py-16">
       <div className="container mx-auto px-4">
@@ -98,17 +127,21 @@ export const Footer = () => {
               <p className="text-primary-foreground/70 text-sm mb-4">
                 Subscribe to our newsletter for the latest insights and updates.
               </p>
-              <form className="flex gap-2">
+              <form className="flex gap-2" onSubmit={onSubscribe}>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
+                  required
                   className="flex-1 h-10 px-4 rounded-lg bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                 />
                 <button
                   type="submit"
-                  className="h-10 px-4 bg-accent text-accent-foreground rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
+                  disabled={submitting}
+                  className="h-10 px-4 bg-accent text-accent-foreground rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60"
                 >
-                  Subscribe
+                  {submitting ? "Subscribing..." : "Subscribe"}
                 </button>
               </form>
             </div>

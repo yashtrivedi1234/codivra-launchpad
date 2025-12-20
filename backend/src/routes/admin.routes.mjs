@@ -4,7 +4,6 @@ import {
   handleAdminMe,
   handleDeleteJobApplication,
   handleListJobApplications,
-  handleAdminSignup,
   handleAdminChangePassword,
 } from "../controllers/admin.controller.mjs";
 import { requireAdmin } from "../middleware/auth.middleware.mjs";
@@ -12,7 +11,6 @@ import { requireAdmin } from "../middleware/auth.middleware.mjs";
 const router = Router();
 
 // Auth routes
-router.post("/api/admin/signup", handleAdminSignup);
 router.post("/api/admin/login", handleAdminLogin);
 
 // Protected routes

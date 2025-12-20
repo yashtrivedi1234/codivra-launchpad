@@ -14,3 +14,7 @@ export const EMAIL_FROM =
   process.env.EMAIL_FROM || process.env.SMTP_USER || "no-reply@example.com";
 
 export const EMAIL_TO = process.env.EMAIL_TO || "codivrasolution@gmail.com";
+// Cloudinary Configuration
+export const CLOUDINARY_NAME = process.env.CLOUDINARY_NAME || "";
+export const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY || "";
+export const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET || "";

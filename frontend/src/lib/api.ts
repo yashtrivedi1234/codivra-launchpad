@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL || "/";
+// Default to backend dev server if no env override is provided.
+const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 export interface ContactPayload {
   name: string;
@@ -52,10 +53,59 @@ export interface PageSection {
   updated_at?: string;
 }
 
-export interface AdminSignupPayload {
-  email: string;
-  password: string;
+export interface Service {
+  _id: string;
+  title: string;
+  description: string;
+  icon: string;
+  features?: string[];
+  price?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface TeamMember {
+  _id: string;
   name: string;
+  role: string;
+  bio: string;
+  image?: string;
+  email?: string;
+  social_links?: {
+    linkedin?: string;
+    twitter?: string;
+    github?: string;
+  };
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PortfolioItem {
+  _id: string;
+  title: string;
+  description: string;
+  image?: string;
+  category: string;
+  link?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface BlogPost {
+  _id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  category: string;
+  image?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SubscriptionPayload {
+  email: string;
+  source?: string;
 }
 
 export const api = createApi({
@@ -74,7 +124,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["JobApplications", "Pages"],
+  tagTypes: ["JobApplications", "Pages", "Services", "Team", "Portfolio", "Blog"],
   endpoints: (builder) => ({
     submitContact: builder.mutation<
       { status: string; message?: string },
@@ -102,16 +152,6 @@ export const api = createApi({
     >({
       query: (body) => ({
         url: "/api/admin/login",
-        method: "POST",
-        body,
-      }),
-    }),
-    adminSignup: builder.mutation<
-      { token: string; user: AdminUser },
-      AdminSignupPayload
-    >({
-      query: (body) => ({
-        url: "/api/admin/signup",
         method: "POST",
         body,
       }),
@@ -166,6 +206,301 @@ export const api = createApi({
       }),
       invalidatesTags: ["Pages"],
     }),
+    // Services endpoints
+    getServices: builder.query<{ items: Service[] }, void>({
+      query: () => ({
+        url: "/api/services",
+        method: "GET",
+      }),
+      providesTags: ["Services"],
+    }),
+    createService: builder.mutation<
+      { status: string; message: string; data: Service },
+      FormData | Omit<Service, "_id" | "created_at" | "updated_at">
+    >({
+      query: (body) => ({
+        url: "/api/admin/services",
+        method: "POST",
+        body,
+      }),
+      async onQueryStarted(newService, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData("getServices", undefined, (draft) => {
+              draft.items.unshift(data.data);
+            })
+          );
+        } catch {}
+      },
+    }),
+    updateService: builder.mutation<
+      { status: string; message: string },
+      { id: string; data: FormData | Partial<Omit<Service, "_id" | "created_at" | "updated_at">> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/api/admin/services/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      async onQueryStarted({ id, data }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData("getServices", undefined, (draft) => {
+            const service = draft.items.find((s) => s._id === id);
+            if (service && !(data instanceof FormData)) {
+              Object.assign(service, data);
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+    deleteService: builder.mutation<{ status: string; message: string }, string>({
+      query: (id) => ({
+        url: `/api/admin/services/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData("getServices", undefined, (draft) => {
+            draft.items = draft.items.filter((s) => s._id !== id);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+    // Team endpoints
+    getTeam: builder.query<{ items: TeamMember[] }, void>({
+      query: () => ({
+        url: "/api/team",
+        method: "GET",
+      }),
+      providesTags: ["Team"],
+    }),
+    createTeamMember: builder.mutation<
+      { status: string; message: string; data: TeamMember },
+      FormData | Omit<TeamMember, "_id" | "created_at" | "updated_at">
+    >({
+      query: (body) => ({
+        url: "/api/admin/team",
+        method: "POST",
+        body,
+      }),
+      async onQueryStarted(newMember, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData("getTeam", undefined, (draft) => {
+              draft.items.unshift(data.data);
+            })
+          );
+        } catch {}
+      },
+    }),
+    updateTeamMember: builder.mutation<
+      { status: string; message: string },
+      { id: string; data: FormData | Partial<Omit<TeamMember, "_id" | "created_at" | "updated_at">> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/api/admin/team/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      async onQueryStarted({ id, data }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData("getTeam", undefined, (draft) => {
+            const member = draft.items.find((m) => m._id === id);
+            if (member && !(data instanceof FormData)) {
+              Object.assign(member, data);
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+    deleteTeamMember: builder.mutation<{ status: string; message: string }, string>({
+      query: (id) => ({
+        url: `/api/admin/team/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData("getTeam", undefined, (draft) => {
+            draft.items = draft.items.filter((m) => m._id !== id);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+    // Portfolio endpoints
+    getPortfolio: builder.query<{ items: PortfolioItem[] }, void>({
+      query: () => ({
+        url: "/api/portfolio",
+        method: "GET",
+      }),
+      providesTags: ["Portfolio"],
+    }),
+    createPortfolioItem: builder.mutation<
+      { status: string; message: string; data: PortfolioItem },
+      FormData | Omit<PortfolioItem, "_id" | "created_at" | "updated_at">
+    >({
+      query: (body) => ({
+        url: "/api/admin/portfolio",
+        method: "POST",
+        body,
+      }),
+      async onQueryStarted(newItem, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData("getPortfolio", undefined, (draft) => {
+              draft.items.unshift(data.data);
+            })
+          );
+        } catch {}
+      },
+    }),
+    updatePortfolioItem: builder.mutation<
+      { status: string; message: string },
+      { id: string; data: FormData | Partial<Omit<PortfolioItem, "_id" | "created_at" | "updated_at">> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/api/admin/portfolio/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      async onQueryStarted({ id, data }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData("getPortfolio", undefined, (draft) => {
+            const item = draft.items.find((p) => p._id === id);
+            if (item && !(data instanceof FormData)) {
+              Object.assign(item, data);
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+    deletePortfolioItem: builder.mutation<{ status: string; message: string }, string>({
+      query: (id) => ({
+        url: `/api/admin/portfolio/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData("getPortfolio", undefined, (draft) => {
+            draft.items = draft.items.filter((p) => p._id !== id);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+    // Blog endpoints
+    getBlog: builder.query<{ items: BlogPost[] }, void>({
+      query: () => ({
+        url: "/api/blog",
+        method: "GET",
+      }),
+      providesTags: ["Blog"],
+    }),
+    createBlogPost: builder.mutation<
+      { status: string; message: string; data: BlogPost },
+      FormData | Omit<BlogPost, "_id" | "created_at" | "updated_at">
+    >({
+      query: (body) => ({
+        url: "/api/admin/blog",
+        method: "POST",
+        body,
+      }),
+      async onQueryStarted(newPost, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(
+            api.util.updateQueryData("getBlog", undefined, (draft) => {
+              draft.items.unshift(data.data);
+            })
+          );
+        } catch {}
+      },
+    }),
+    updateBlogPost: builder.mutation<
+      { status: string; message: string },
+      { id: string; data: FormData | Partial<Omit<BlogPost, "_id" | "created_at" | "updated_at">> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/api/admin/blog/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      async onQueryStarted({ id, data }, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData("getBlog", undefined, (draft) => {
+            const post = draft.items.find((b) => b._id === id);
+            if (post && !(data instanceof FormData)) {
+              Object.assign(post, data);
+            }
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+    deleteBlogPost: builder.mutation<{ status: string; message: string }, string>({
+      query: (id) => ({
+        url: `/api/admin/blog/${id}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        const patchResult = dispatch(
+          api.util.updateQueryData("getBlog", undefined, (draft) => {
+            draft.items = draft.items.filter((b) => b._id !== id);
+          })
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
+    // Newsletter subscription
+    submitSubscription: builder.mutation<
+      { status: string; message?: string },
+      SubscriptionPayload
+    >({
+      query: (body) => ({
+        url: "/api/subscribe",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -173,12 +508,28 @@ export const {
   useSubmitContactMutation,
   useSubmitApplicationMutation,
   useAdminLoginMutation,
-  useAdminSignupMutation,
   useGetJobApplicationsQuery,
   useDeleteJobApplicationMutation,
   useGetPageQuery,
   useAdminListPagesQuery,
   useAdminUpsertPageSectionMutation,
   useAdminDeletePageSectionMutation,
+  useGetServicesQuery,
+  useCreateServiceMutation,
+  useUpdateServiceMutation,
+  useDeleteServiceMutation,
+  useGetTeamQuery,
+  useCreateTeamMemberMutation,
+  useUpdateTeamMemberMutation,
+  useDeleteTeamMemberMutation,
+  useGetPortfolioQuery,
+  useCreatePortfolioItemMutation,
+  useUpdatePortfolioItemMutation,
+  useDeletePortfolioItemMutation,
+  useGetBlogQuery,
+  useCreateBlogPostMutation,
+  useUpdateBlogPostMutation,
+  useDeleteBlogPostMutation,
+  useSubmitSubscriptionMutation,
 } = api;
 
