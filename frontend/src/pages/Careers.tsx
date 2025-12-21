@@ -12,6 +12,7 @@ import { useGetJobsQuery, useSubmitApplicationMutation } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import { motion } from "framer-motion";
+import * as Yup from "yup";
 
 type JobCardData = {
   id: string;
@@ -47,6 +48,31 @@ const benefits = [
   }
 ];
 
+// Yup Validation Schema for Application Form
+const applicationSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(2, "Name must be at least 2 characters long")
+    .matches(/^[a-zA-Z\s]+$/, "Name should contain only letters")
+    .required("Name is required"),
+  email: Yup.string()
+    .email("Please enter a valid email address")
+    .required("Email is required"),
+  phone: Yup.string()
+    .matches(/^[0-9]+$/, "Phone number should contain only numbers")
+    .min(10, "Phone number must be at least 10 digits")
+    .max(13, "Phone number must not exceed 13 digits")
+    .nullable(),
+  linkedinUrl: Yup.string()
+    .url("Please enter a valid URL")
+    .nullable(),
+  portfolioUrl: Yup.string()
+    .url("Please enter a valid URL")
+    .nullable(),
+  coverLetter: Yup.string()
+    .min(20, "Cover letter must be at least 20 characters")
+    .nullable(),
+});
+
 interface ApplicationFormProps {
   jobTitle: string;
   onClose: () => void;
@@ -63,13 +89,80 @@ const ApplicationForm = ({ jobTitle, onClose }: ApplicationFormProps) => {
     portfolioUrl: "",
     coverLetter: ""
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const [submitApplication] = useSubmitApplicationMutation();
+
+  // Live validation function
+  const validateField = async (fieldName: string, value: string) => {
+    try {
+      await Yup.reach(applicationSchema, fieldName).validate(value);
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+    } catch (error: any) {
+      if (touchedFields[fieldName]) {
+        setErrors((prev) => ({
+          ...prev,
+          [fieldName]: error.message,
+        }));
+      }
+    }
+  };
+
+  // Handle input change with live validation and restrictions
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    let sanitizedValue = value;
+
+    // Apply field-specific restrictions
+    if (name === "name") {
+      // Only allow letters and spaces
+      sanitizedValue = value.replace(/[^a-zA-Z\s]/g, "");
+    } else if (name === "phone") {
+      // Only allow numbers
+      sanitizedValue = value.replace(/[^0-9]/g, "");
+    } else if (name === "email") {
+      // Remove spaces from email
+      sanitizedValue = value.replace(/\s/g, "");
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: sanitizedValue }));
+    
+    // Validate field if it has been touched
+    if (touchedFields[name]) {
+      validateField(name, sanitizedValue);
+    }
+  };
+
+  // Handle field blur
+  const handleBlur = (fieldName: string) => {
+    setTouchedFields((prev) => ({ ...prev, [fieldName]: true }));
+    validateField(fieldName, formData[fieldName as keyof typeof formData]);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Mark all fields as touched
+    const allTouched = Object.keys(formData).reduce((acc, key) => {
+      acc[key] = true;
+      return acc;
+    }, {} as Record<string, boolean>);
+    setTouchedFields(allTouched);
+
     try {
+      // Validate all fields
+      await applicationSchema.validate(formData, { abortEarly: false });
+      
+      // Clear errors if validation passes
+      setErrors({});
+
       const result = await submitApplication({
         job_title: jobTitle,
         name: formData.name.trim(),
@@ -85,13 +178,29 @@ const ApplicationForm = ({ jobTitle, onClose }: ApplicationFormProps) => {
         description: result.message || "Thank you for applying to Codivra Solutions Careers. We'll review your application and get back to you soon.",
       });
       onClose();
-    } catch (error) {
-      console.error("Error submitting application:", error);
-      toast({
-        title: "Career Application Failed",
-        description: "There was an error submitting your application. Please try again.",
-        variant: "destructive",
-      });
+    } catch (error: any) {
+      // Handle Yup validation errors
+      if (error.name === "ValidationError") {
+        const validationErrors: Record<string, string> = {};
+        error.inner.forEach((err: any) => {
+          if (err.path) {
+            validationErrors[err.path] = err.message;
+          }
+        });
+        setErrors(validationErrors);
+        toast({
+          title: "Validation Error",
+          description: "Please fix the highlighted errors.",
+          variant: "destructive",
+        });
+      } else {
+        console.error("Error submitting application:", error);
+        toast({
+          title: "Career Application Failed",
+          description: "There was an error submitting your application. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -118,85 +227,142 @@ const ApplicationForm = ({ jobTitle, onClose }: ApplicationFormProps) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Form fields remain the same but with dark theme styling */}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-white font-semibold">Full Name *</Label>
             <Input
               id="name"
+              name="name"
               required
               placeholder="John Doe"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF]"
+              onChange={handleInputChange}
+              onBlur={() => handleBlur("name")}
+              className={`bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF] ${
+                errors.name && touchedFields.name ? "border-red-500" : ""
+              }`}
+              disabled={isSubmitting}
             />
+            {errors.name && touchedFields.name && (
+              <p className="text-red-400 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email" className="text-white font-semibold">Email Address *</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               required
               placeholder="john@example.com"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF]"
+              onChange={handleInputChange}
+              onBlur={() => handleBlur("email")}
+              className={`bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF] ${
+                errors.email && touchedFields.email ? "border-red-500" : ""
+              }`}
+              disabled={isSubmitting}
             />
+            {errors.email && touchedFields.email && (
+              <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="phone" className="text-white font-semibold">Phone Number</Label>
             <Input
               id="phone"
+              name="phone"
               type="tel"
-              placeholder="+1 (555) 123-4567"
+              placeholder="Enter your phone number"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF]"
+              onChange={handleInputChange}
+              onBlur={() => handleBlur("phone")}
+              inputMode="numeric"
+              className={`bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF] ${
+                errors.phone && touchedFields.phone ? "border-red-500" : ""
+              }`}
+              disabled={isSubmitting}
             />
+            {errors.phone && touchedFields.phone && (
+              <p className="text-red-400 text-sm mt-1">{errors.phone}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="linkedin" className="text-white font-semibold">LinkedIn Profile</Label>
             <Input
               id="linkedin"
+              name="linkedinUrl"
               type="url"
               placeholder="https://linkedin.com/in/yourprofile"
               value={formData.linkedinUrl}
-              onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF]"
+              onChange={handleInputChange}
+              onBlur={() => handleBlur("linkedinUrl")}
+              className={`bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF] ${
+                errors.linkedinUrl && touchedFields.linkedinUrl ? "border-red-500" : ""
+              }`}
+              disabled={isSubmitting}
             />
+            {errors.linkedinUrl && touchedFields.linkedinUrl && (
+              <p className="text-red-400 text-sm mt-1">{errors.linkedinUrl}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="portfolio" className="text-white font-semibold">Portfolio / Website</Label>
             <Input
               id="portfolio"
+              name="portfolioUrl"
               type="url"
               placeholder="https://yourportfolio.com"
               value={formData.portfolioUrl}
-              onChange={(e) => setFormData({ ...formData, portfolioUrl: e.target.value })}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF]"
+              onChange={handleInputChange}
+              onBlur={() => handleBlur("portfolioUrl")}
+              className={`bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF] ${
+                errors.portfolioUrl && touchedFields.portfolioUrl ? "border-red-500" : ""
+              }`}
+              disabled={isSubmitting}
             />
+            {errors.portfolioUrl && touchedFields.portfolioUrl && (
+              <p className="text-red-400 text-sm mt-1">{errors.portfolioUrl}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="coverLetter" className="text-white font-semibold">Cover Letter</Label>
             <Textarea
               id="coverLetter"
+              name="coverLetter"
               placeholder="Tell us why you're interested in this position..."
               rows={5}
               value={formData.coverLetter}
-              onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF] resize-none"
+              onChange={handleInputChange}
+              onBlur={() => handleBlur("coverLetter")}
+              className={`bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF] resize-none ${
+                errors.coverLetter && touchedFields.coverLetter ? "border-red-500" : ""
+              }`}
+              disabled={isSubmitting}
             />
+            {errors.coverLetter && touchedFields.coverLetter && (
+              <p className="text-red-400 text-sm mt-1">{errors.coverLetter}</p>
+            )}
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" onClick={onClose} className="flex-1 bg-white/5 border border-white/10 text-white hover:bg-white/10">
+            <Button 
+              type="button" 
+              onClick={onClose} 
+              className="flex-1 bg-white/5 border border-white/10 text-white hover:bg-white/10"
+              disabled={isSubmitting}
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting} className="flex-1 bg-gradient-to-r from-[#00D9FF] to-[#0066FF] text-white font-bold">
+            <Button 
+              type="submit" 
+              disabled={isSubmitting} 
+              className="flex-1 bg-gradient-to-r from-[#00D9FF] to-[#0066FF] text-white font-bold"
+            >
               {isSubmitting ? "Submitting..." : "Submit Application"}
             </Button>
           </div>
