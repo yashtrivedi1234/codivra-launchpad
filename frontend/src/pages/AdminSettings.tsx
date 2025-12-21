@@ -23,7 +23,7 @@ const AdminSettings = () => {
     try {
       const token = window.localStorage.getItem("admin_token");
       const res = await axios.post(
-        "/api/admin/send-email-otp",
+        `${import.meta.env.VITE_API_URL}/api/admin/send-email-otp`,
         { email },
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -49,7 +49,7 @@ const AdminSettings = () => {
     try {
       const token = window.localStorage.getItem("admin_token");
       const res = await axios.post(
-        "/api/admin/verify-email-otp",
+        `${import.meta.env.VITE_API_URL}/api/admin/verify-email-otp`,
         { email, otp },
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -82,7 +82,7 @@ const AdminSettings = () => {
         return;
       }
       const res = await axios.post(
-        "/api/admin/update-credentials",
+        `${import.meta.env.VITE_API_URL}/api/admin/update-credentials`,
         { email: email || undefined, password: password || undefined },
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {},

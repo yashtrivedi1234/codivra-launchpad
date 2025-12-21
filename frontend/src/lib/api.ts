@@ -2,7 +2,7 @@ import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolk
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // Use only env variable for API base URL. Must be set in .env files.
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl,
