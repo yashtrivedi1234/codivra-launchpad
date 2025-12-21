@@ -27,7 +27,7 @@ const AdminServices = () => {
     title: "",
     description: "",
     features: [] as string[],
-    price: 0,
+    // price: 0, (removed)
   });
 
   const resetForm = () => {
@@ -49,7 +49,7 @@ const AdminServices = () => {
       title: service.title,
       description: service.description,
       features: service.features || [],
-      price: service.price || 0,
+      // price: service.price || 0, (removed)
     });
     setIconPreview(service.icon || null);
     setIconFile(null);
@@ -74,7 +74,7 @@ const AdminServices = () => {
       const formDataObj = new FormData();
       formDataObj.append("title", formData.title);
       formDataObj.append("description", formData.description);
-      formDataObj.append("price", formData.price.toString());
+      // formDataObj.append("price", formData.price.toString()); (removed)
       formData.features.forEach((feature) => {
         formDataObj.append("features[]", feature);
       });
@@ -174,11 +174,7 @@ const AdminServices = () => {
                             {service.title}
                           </h3>
                           <div className="flex items-center gap-2">
-                            {service.price && (
-                              <p className="text-sm text-[#00D9FF] font-semibold">
-                                ${service.price}
-                              </p>
-                            )}
+                            {/* Price removed from display */}
                             <span className="text-xs bg-[#00D9FF]/20 text-[#00D9FF] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
                               Active
                             </span>
@@ -299,19 +295,7 @@ const AdminServices = () => {
                       </label>
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold text-white/70 mb-2 uppercase tracking-wider">
-                      Price (Optional)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                      className="w-full px-4 py-3 border border-white/10 rounded-xl bg-white/5 text-white placeholder:text-white/40 focus:outline-none focus:border-[#00D9FF] focus:ring-2 focus:ring-[#00D9FF]/20 transition-all"
-                      placeholder="5000"
-                      min="0"
-                    />
-                  </div>
+                  {/* Price input removed from form */}
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-white/70 mb-2 uppercase tracking-wider">

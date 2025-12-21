@@ -214,15 +214,6 @@ export const Footer = () => {
               <Link to="/terms-of-service" className="hover:text-[#00D9FF] transition-colors">
                 Terms of Service
               </Link>
-              <a 
-                href="https://github.com/codivra" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 hover:text-[#00D9FF] transition-colors"
-              >
-                GitHub
-                <ExternalLink className="w-3 h-3" />
-              </a>
             </div>
           </div>
         </div>

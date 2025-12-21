@@ -97,7 +97,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="inline-flex items-center gap-2 mb-8"
+            className="inline-flex items-center gap-2 mb-4 mt-4"
           >
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-[#00D9FF] to-[#0066FF] blur-xl opacity-50" />

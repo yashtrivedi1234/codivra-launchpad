@@ -121,7 +121,6 @@ export interface Service {
   description: string;
   icon: string;
   features?: string[];
-  price?: number;
   created_at?: string;
   updated_at?: string;
 }
