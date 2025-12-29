@@ -12,7 +12,7 @@ const navLinks = [
 	{ href: "/blog", label: "Blog" },
 	{ href: "/careers", label: "Careers" },
 	{ href: "/contact", label: "Contact" },
-	{ href: "/admin", label: "Admin" },
+	{ href: "/admin", label: "Admin", external: true },
 ];
 
 export const Header = () => {
@@ -37,7 +37,23 @@ export const Header = () => {
 
 						{/* Desktop Navigation */}
 						<nav className="hidden lg:flex items-center gap-1">
-							{navLinks.map((link) => (
+							{navLinks.map((link) =>
+								link.external ? (
+									<a
+										key={link.href}
+										href={link.href}
+										target="_blank"
+										rel="noopener noreferrer"
+										className={`relative px-5 py-2.5 text-sm font-medium tracking-wide transition-all duration-300 group ${
+											location.pathname === link.href
+												? "text-[#00D9FF]"
+												: "text-white/70 hover:text-white"
+										}`}
+									>
+										<span className="relative z-10">{link.label}</span>
+										<span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-gradient-to-r from-[#00D9FF] to-[#0066FF] transition-all duration-300 group-hover:w-3/4" />
+									</a>
+								) : (
 								<Link
 									key={link.href}
 									to={link.href}
@@ -53,7 +69,8 @@ export const Header = () => {
 									)}
 									<span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-gradient-to-r from-[#00D9FF] to-[#0066FF] transition-all duration-300 group-hover:w-3/4" />
 								</Link>
-							))}
+								)
+							)}
 						</nav>
 
 						{/* CTA Button - Desktop */}
@@ -94,7 +111,22 @@ export const Header = () => {
 					onClick={() => setIsMobileMenuOpen(false)}
 				/>
 				<nav className="relative h-full flex flex-col items-center justify-center px-6">
-					{navLinks.map((link, index) => (
+					{navLinks.map((link, index) =>
+						link.external ? (
+							<a
+								key={link.href}
+								href={link.href}
+								target="_blank"
+								rel="noopener noreferrer"
+								className={`w-full max-w-xs text-center py-4 text-2xl font-bold transition-all duration-300 ${
+									location.pathname === link.href
+										? "text-[#00D9FF]"
+										: "text-white/70 hover:text-white"
+								}`}
+							>
+								{link.label}
+							</a>
+						) : (
 						<Link
 							key={link.href}
 							to={link.href}
@@ -114,7 +146,8 @@ export const Header = () => {
 						>
 							{link.label}
 						</Link>
-					))}
+						)
+					)}
 					<div className="mt-8 w-full max-w-xs">
 						<Button
 							asChild
