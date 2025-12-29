@@ -133,7 +133,7 @@ export const About = () => {
                       className="relative group"
                     >
                       <div className="absolute inset-0 bg-white/5 rounded-xl sm:rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-center hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+                      <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-center hover:bg-white/10 hover:border-white/20 transition-all duration-300 h-28 sm:h-32 lg:h-36 flex flex-col items-center justify-center">
                         <div className="text-3xl sm:text-4xl md:text-5xl font-black text-[#00D9FF] mb-1 sm:mb-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
                           {stat.value}
                         </div>

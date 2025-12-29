@@ -192,13 +192,13 @@ export const Footer = () => {
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 h-11 sm:h-12 px-4 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF] focus:ring-1 focus:ring-[#00D9FF] focus:outline-none transition-colors text-sm sm:text-base"
+                className="flex-1 h-14 sm:h-16 px-4 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:border-[#00D9FF] focus:ring-1 focus:ring-[#00D9FF] focus:outline-none transition-colors text-sm sm:text-base"
                 required
                 disabled={isSubscribing}
               />
               <button
                 type="submit"
-                className="h-11 sm:h-12 px-6 sm:px-8 bg-gradient-to-r from-[#00D9FF] to-[#0066FF] text-white font-semibold rounded-lg hover:shadow-[0_0_30px_rgba(0,217,255,0.5)] transition-all duration-300 whitespace-nowrap text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-14 sm:h-16 px-6 sm:px-8 bg-gradient-to-r from-[#00D9FF] to-[#0066FF] text-white font-semibold rounded-lg hover:shadow-[0_0_30px_rgba(0,217,255,0.5)] transition-all duration-300 whitespace-nowrap text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={isSubscribing}
               >
                 {isSubscribing ? "Subscribing..." : "Subscribe"}
