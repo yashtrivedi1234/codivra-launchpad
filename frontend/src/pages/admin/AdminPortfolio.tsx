@@ -25,7 +25,6 @@ const AdminPortfolio = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
     category: "",
     link: "",
   });
@@ -33,7 +32,6 @@ const AdminPortfolio = () => {
   const resetForm = () => {
     setFormData({
       title: "",
-      description: "",
       category: "",
       link: "",
     });
@@ -47,7 +45,6 @@ const AdminPortfolio = () => {
     setEditingItem(item);
     setFormData({
       title: item.title,
-      description: item.description,
       category: item.category,
       link: item.link || "",
     });
@@ -73,7 +70,6 @@ const AdminPortfolio = () => {
     try {
       const formDataObj = new FormData();
       formDataObj.append("title", formData.title);
-      formDataObj.append("description", formData.description);
       formDataObj.append("category", formData.category);
       formDataObj.append("link", formData.link || "");
 
@@ -125,7 +121,7 @@ const AdminPortfolio = () => {
   const filteredItems = items.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchQuery.toLowerCase())
+    false
   );
 
   return (
@@ -192,9 +188,6 @@ const AdminPortfolio = () => {
                         Category
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Description
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Link
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -227,11 +220,6 @@ const AdminPortfolio = () => {
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             {item.category}
                           </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-600 line-clamp-2 max-w-md">
-                            {item.description}
-                          </div>
                         </td>
                         <td className="px-6 py-4">
                           {item.link ? (
@@ -405,19 +393,7 @@ const AdminPortfolio = () => {
                   />
                 </div>
 
-                {/* Description */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Description <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    required
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent h-20 resize-none"
-                    placeholder="Brief project description..."
-                  />
-                </div>
+                {/* Description removed */}
 
                 {/* Actions */}
                 <div className="flex gap-2 pt-3 border-t border-gray-200">

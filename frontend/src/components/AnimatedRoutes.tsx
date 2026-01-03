@@ -12,6 +12,7 @@ import Pricing from "@/pages/Pricing.tsx";
 import Portfolio from "@/pages/Portfolio.tsx";
 import Contact from "@/pages/Contact.tsx";
 import Blog from "@/pages/Blog.tsx";
+import BlogDetail from "@/pages/BlogDetail.tsx"; // Add this import
 import Careers from "@/pages/Careers.tsx";
 import NotFound from "@/pages/NotFound.tsx";
 import AdminLogin from "@/pages/AdminLogin.tsx";
@@ -33,8 +34,9 @@ const AnimatedRoutes = () => {
   }, [location.pathname]);
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+    <>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
         <Route
           path="/admin/settings"
           element={
@@ -98,6 +100,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Blog />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/blog/:id"
+          element={
+            <PageTransition>
+              <BlogDetail />
             </PageTransition>
           }
         />
@@ -231,8 +241,9 @@ const AnimatedRoutes = () => {
             </PageTransition>
           }
         />
-      </Routes>
-    </AnimatePresence>
+        </Routes>
+      </AnimatePresence>
+    </>
   );
 };
 

@@ -25,15 +25,11 @@ const AdminServices = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
-    features: [] as string[],
   });
 
   const resetForm = () => {
     setFormData({
       title: "",
-      description: "",
-      features: [],
     });
     setEditingService(null);
     setIconFile(null);
@@ -45,8 +41,6 @@ const AdminServices = () => {
     setEditingService(service);
     setFormData({
       title: service.title,
-      description: service.description,
-      features: service.features || [],
     });
     setIconPreview(service.icon || null);
     setIconFile(null);
@@ -70,10 +64,6 @@ const AdminServices = () => {
     try {
       const formDataObj = new FormData();
       formDataObj.append("title", formData.title);
-      formDataObj.append("description", formData.description);
-      formData.features.forEach((feature) => {
-        formDataObj.append("features[]", feature);
-      });
 
       if (iconFile) {
         formDataObj.append("icon", iconFile);
@@ -120,8 +110,7 @@ const AdminServices = () => {
   };
 
   const filteredServices = data?.items?.filter((service) =>
-    service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    service.description.toLowerCase().includes(searchQuery.toLowerCase())
+    service.title.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
   return (
@@ -184,12 +173,6 @@ const AdminServices = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Service
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Description
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Features
-                      </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
@@ -201,21 +184,15 @@ const AdminServices = () => {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             {service.icon && (
-                              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                <span className="text-xl">{service.icon}</span>
+                              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                <img
+                                  src={service.icon}
+                                  alt={service.title}
+                                  className="w-6 h-6 object-contain"
+                                />
                               </div>
                             )}
                             <div className="font-medium text-gray-900">{service.title}</div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm text-gray-600 line-clamp-2 max-w-md">
-                            {service.description}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-xs text-gray-500">
-                            {service.features?.length || 0} features
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -292,39 +269,46 @@ const AdminServices = () => {
                   <div className="flex items-center gap-3">
                     {iconPreview ? (
                       <div className="relative">
-                        <div className="w-14 h-14 rounded-lg bg-blue-100 flex items-center justify-center">
-                          <span className="text-2xl">{iconPreview}</span>
-                        </div>
+                        <label htmlFor="icon-upload" className="cursor-pointer">
+                          <div className="w-14 h-14 rounded-lg bg-blue-100 flex items-center justify-center overflow-hidden">
+                            <img
+                              src={iconPreview}
+                              alt="Icon Preview"
+                              className="w-10 h-10 object-contain"
+                            />
+                          </div>
+                        </label>
                         <button
                           type="button"
                           onClick={() => {
                             setIconPreview(null);
                             setIconFile(null);
+                            const input = document.getElementById("icon-upload") as HTMLInputElement | null;
+                            if (input) input.value = "";
                           }}
-                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
                         >
                           <X className="w-3 h-3" />
                         </button>
                       </div>
                     ) : (
-                      <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center border border-dashed border-gray-300">
+                      <label
+                        htmlFor="icon-upload"
+                        className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center border border-dashed border-gray-300 cursor-pointer"
+                      >
                         <Upload className="w-5 h-5 text-gray-400" />
-                      </div>
+                      </label>
                     )}
-                    <label className="flex-1">
-                      <span className="inline-block px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md cursor-pointer transition-colors text-xs font-medium">
-                        {iconFile ? "Change" : "Upload"}
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleIconChange}
-                        className="hidden"
-                      />
-                      {iconFile && (
-                        <span className="ml-2 text-xs text-gray-500 truncate max-w-[200px] inline-block">{iconFile.name}</span>
-                      )}
-                    </label>
+                    <input
+                      id="icon-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleIconChange}
+                      className="hidden"
+                    />
+                    {iconFile && (
+                      <span className="ml-2 text-xs text-gray-500 truncate max-w-[200px] inline-block">{iconFile.name}</span>
+                    )}
                   </div>
                 </div>
 
@@ -343,36 +327,7 @@ const AdminServices = () => {
                   />
                 </div>
 
-                {/* Description */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Description <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    required
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent h-20 resize-none"
-                    placeholder="Describe the service..."
-                  />
-                </div>
 
-                {/* Features */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Features (comma-separated)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.features.join(", ")}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      features: e.target.value.split(",").map((f) => f.trim()).filter((f) => f),
-                    })}
-                    className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Feature 1, Feature 2, Feature 3"
-                  />
-                </div>
 
                 {/* Actions */}
                 <div className="flex gap-2 pt-3 border-t border-gray-200">

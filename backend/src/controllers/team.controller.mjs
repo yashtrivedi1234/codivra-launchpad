@@ -33,14 +33,6 @@ export async function handleCreateTeamMember(req, res) {
   try {
     let value = { ...req.body };
 
-    // Parse social_links if it's a string (comes from FormData)
-    if (value.social_links && typeof value.social_links === "string") {
-      try {
-        value.social_links = JSON.parse(value.social_links);
-      } catch (e) {
-        value.social_links = {};
-      }
-    }
 
     // Validate with schema
     value = createTeamMemberSchema.parse(value);
@@ -103,14 +95,6 @@ export async function handleUpdateTeamMember(req, res) {
 
     let value = { ...req.body };
 
-    // Parse social_links if it's a string (comes from FormData)
-    if (value.social_links && typeof value.social_links === "string") {
-      try {
-        value.social_links = JSON.parse(value.social_links);
-      } catch (e) {
-        value.social_links = {};
-      }
-    }
 
     // Validate with schema
     value = updateTeamMemberSchema.parse(value);

@@ -118,9 +118,7 @@ export interface PageSection {
 export interface Service {
   _id: string;
   title: string;
-  description: string;
-  icon: string;
-  features?: string[];
+  icon?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -129,14 +127,7 @@ export interface TeamMember {
   _id: string;
   name: string;
   role: string;
-  bio: string;
   image?: string;
-  email?: string;
-  social_links?: {
-    linkedin?: string;
-    twitter?: string;
-    github?: string;
-  };
   created_at?: string;
   updated_at?: string;
 }
@@ -144,9 +135,8 @@ export interface TeamMember {
 export interface PortfolioItem {
   _id: string;
   title: string;
-  description: string;
-  image?: string;
   category: string;
+  image?: string;
   link?: string;
   created_at?: string;
   updated_at?: string;
@@ -155,9 +145,7 @@ export interface PortfolioItem {
 export interface BlogPost {
   _id: string;
   title: string;
-  excerpt: string;
   content: string;
-  author: string;
   category: string;
   image?: string;
   created_at?: string;
@@ -355,7 +343,7 @@ export const api = createApi({
     }),
     createService: builder.mutation<
       { status: string; message: string; data: Service },
-      FormData | Omit<Service, "_id" | "created_at" | "updated_at">
+      FormData | { title: string; icon?: string }
     >({
       query: (body) => ({
         url: "/api/admin/services",
@@ -375,7 +363,7 @@ export const api = createApi({
     }),
     updateService: builder.mutation<
       { status: string; message: string },
-      { id: string; data: FormData | Partial<Omit<Service, "_id" | "created_at" | "updated_at">> }
+      { id: string; data: FormData | { title?: string; icon?: string } }
     >({
       query: ({ id, data }) => ({
         url: `/api/admin/services/${id}`,
@@ -560,21 +548,33 @@ export const api = createApi({
     }),
     // Blog endpoints
     getBlog: builder.query<{ items: BlogPost[] }, void>({
-      query: () => ({
-        url: "/api/blog",
-        method: "GET",
-      }),
-      providesTags: ["Blog"],
+      query: () => '/api/blog',
+      providesTags: ['Blog'],
+    }),
+    getBlogById: builder.query<{ data: BlogPost }, string>({
+      query: (id) => `/api/blog/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Blog', id }],
     }),
     createBlogPost: builder.mutation<
       { status: string; message: string; data: BlogPost },
       FormData | Omit<BlogPost, "_id" | "created_at" | "updated_at">
     >({
-      query: (body) => ({
-        url: "/api/admin/blog",
-        method: "POST",
-        body,
-      }),
+      query: (body) => {
+        if (!(body instanceof FormData)) {
+          const cleanBody: any = { ...body };
+          if (cleanBody.image === "") delete cleanBody.image;
+          return {
+            url: "/api/admin/blog",
+            method: "POST",
+            body: cleanBody,
+          };
+        }
+        return {
+          url: "/api/admin/blog",
+          method: "POST",
+          body,
+        };
+      },
       async onQueryStarted(newPost, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
@@ -590,11 +590,22 @@ export const api = createApi({
       { status: string; message: string },
       { id: string; data: FormData | Partial<Omit<BlogPost, "_id" | "created_at" | "updated_at">> }
     >({
-      query: ({ id, data }) => ({
-        url: `/api/admin/blog/${id}`,
-        method: "PUT",
-        body: data,
-      }),
+      query: ({ id, data }) => {
+        if (!(data instanceof FormData)) {
+          const cleanData: any = { ...data };
+          if (cleanData.image === "") delete cleanData.image;
+          return {
+            url: `/api/admin/blog/${id}`,
+            method: "PUT",
+            body: cleanData,
+          };
+        }
+        return {
+          url: `/api/admin/blog/${id}`,
+          method: "PUT",
+          body: data,
+        };
+      },
       async onQueryStarted({ id, data }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
           api.util.updateQueryData("getBlog", undefined, (draft) => {
@@ -678,5 +689,6 @@ export const {
   useUpdateBlogPostMutation,
   useDeleteBlogPostMutation,
   useSubmitSubscriptionMutation,
+  useGetBlogByIdQuery, // Add this
 } = api;
 

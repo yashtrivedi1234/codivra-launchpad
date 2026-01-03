@@ -25,23 +25,21 @@ const AdminBlog = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
     title: "",
-    excerpt: "",
     content: "",
-    author: "",
     category: "",
   });
+  const [removeImage, setRemoveImage] = useState(false);
 
   const resetForm = () => {
     setFormData({
       title: "",
-      excerpt: "",
       content: "",
-      author: "",
       category: "",
     });
     setEditingPost(null);
     setImageFile(null);
     setImagePreview(null);
+    setRemoveImage(false);
     setIsModalOpen(false);
   };
 
@@ -49,13 +47,12 @@ const AdminBlog = () => {
     setEditingPost(post);
     setFormData({
       title: post.title,
-      excerpt: post.excerpt,
       content: post.content,
-      author: post.author,
       category: post.category,
     });
     setImagePreview(post.image || null);
     setImageFile(null);
+    setRemoveImage(false);
     setIsModalOpen(true);
   };
 
@@ -76,13 +73,15 @@ const AdminBlog = () => {
     try {
       const formDataObj = new FormData();
       formDataObj.append("title", formData.title);
-      formDataObj.append("excerpt", formData.excerpt);
       formDataObj.append("content", formData.content);
-      formDataObj.append("author", formData.author);
       formDataObj.append("category", formData.category);
 
       if (imageFile) {
+        // new image upload
         formDataObj.append("image", imageFile);
+      } else if (removeImage) {
+        // explicitly remove image
+        formDataObj.append("image", "");
       }
 
       if (editingPost) {
@@ -128,9 +127,7 @@ const AdminBlog = () => {
   const posts = data?.items || [];
   const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+    post.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -233,14 +230,7 @@ const AdminBlog = () => {
                   <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                    {post.excerpt}
-                  </p>
                   <div className="flex items-center gap-3 text-xs text-gray-500 mb-3 pb-3 border-b border-gray-200">
-                    <div className="flex items-center gap-1">
-                      <User className="w-3 h-3" />
-                      <span>{post.author}</span>
-                    </div>
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       <span>
@@ -311,6 +301,7 @@ const AdminBlog = () => {
                           onClick={() => {
                             setImagePreview(null);
                             setImageFile(null);
+                            setRemoveImage(true);
                           }}
                           className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
                         >
@@ -354,47 +345,18 @@ const AdminBlog = () => {
                   />
                 </div>
 
-                {/* Author and Category */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                      Author <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.author}
-                      onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Author name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                      Category <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Technology"
-                    />
-                  </div>
-                </div>
-
-                {/* Excerpt */}
+                {/* Category */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Excerpt <span className="text-red-500">*</span>
+                    Category <span className="text-red-500">*</span>
                   </label>
-                  <textarea
+                  <input
+                    type="text"
                     required
-                    value={formData.excerpt}
-                    onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent h-16 resize-none"
-                    placeholder="Brief summary..."
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Technology"
                   />
                 </div>
 

@@ -3,6 +3,7 @@ import {
   handleCreateBlogPost,
   handleDeleteBlogPost,
   handleGetBlog,
+  handleGetBlogById,
   handleUpdateBlogPost,
 } from "../controllers/blog.controller.mjs";
 import { requireAdmin } from "../middleware/auth.middleware.mjs";
@@ -12,6 +13,9 @@ const router = Router();
 
 // Public: get all blog posts
 router.get("/api/blog", handleGetBlog);
+
+// Public: get single blog post by ID
+router.get("/api/blog/:id", handleGetBlogById);
 
 // Admin: create, update, delete blog posts
 router.post(

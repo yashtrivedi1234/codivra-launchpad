@@ -11,7 +11,6 @@ const Portfolio = () => {
       <main className="pt-20">
         <PageBreadcrumb />
         <PortfolioSection />
-        <Testimonials />
       </main>
       <Footer />
     </div>

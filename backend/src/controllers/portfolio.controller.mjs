@@ -36,8 +36,14 @@ export async function handleCreatePortfolioItem(req, res) {
     // Validate with schema
     value = createPortfolioSchema.parse(value);
 
-    // Add uploaded image URL and Cloudinary details if file was uploaded
+    // Handle uploaded image
     let imageDetails = null;
+
+    // Remove empty image string from body
+    if (value.image === "") {
+      delete value.image;
+    }
+
     if (req.file) {
       value.image = req.file.path;
       imageDetails = {
@@ -97,8 +103,14 @@ export async function handleUpdatePortfolioItem(req, res) {
     // Validate with schema
     value = updatePortfolioSchema.parse(value);
 
-    // Add uploaded image URL and Cloudinary details if file was uploaded
+    // Handle uploaded image
     let imageDetails = null;
+
+    // Remove empty image string from body
+    if (value.image === "") {
+      delete value.image;
+    }
+
     if (req.file) {
       value.image = req.file.path;
       imageDetails = {

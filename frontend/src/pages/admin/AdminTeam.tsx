@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2, Edit3, Loader2, X, Upload, Linkedin, Twitter, Github, Mail, Search, Filter } from "lucide-react";
+import { Plus, Trash2, Edit3, Loader2, X, Upload, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminLayout from "@/components/admin/AdminLayout";
 import {
@@ -26,23 +26,10 @@ const AdminTeam = () => {
   const [formData, setFormData] = useState({
     name: "",
     role: "",
-    bio: "",
-    email: "",
-    social_links: {
-      linkedin: "",
-      twitter: "",
-      github: "",
-    },
   });
 
   const resetForm = () => {
-    setFormData({
-      name: "",
-      role: "",
-      bio: "",
-      email: "",
-      social_links: { linkedin: "", twitter: "", github: "" },
-    });
+    setFormData({ name: "", role: "" });
     setEditingMember(null);
     setImageFile(null);
     setImagePreview(null);
@@ -54,13 +41,6 @@ const AdminTeam = () => {
     setFormData({
       name: member.name,
       role: member.role,
-      bio: member.bio,
-      email: member.email || "",
-      social_links: {
-        linkedin: member.social_links?.linkedin || "",
-        twitter: member.social_links?.twitter || "",
-        github: member.social_links?.github || "",
-      },
     });
     setImagePreview(member.image || null);
     setImageFile(null);
@@ -85,9 +65,6 @@ const AdminTeam = () => {
       const formDataObj = new FormData();
       formDataObj.append("name", formData.name);
       formDataObj.append("role", formData.role);
-      formDataObj.append("bio", formData.bio);
-      formDataObj.append("email", formData.email);
-      formDataObj.append("social_links", JSON.stringify(formData.social_links));
 
       if (imageFile) {
         formDataObj.append("image", imageFile);
@@ -133,11 +110,12 @@ const AdminTeam = () => {
     }
   };
 
-  const filteredMembers = data?.items?.filter((member) =>
-    member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredMembers =
+    data?.items?.filter(
+      (member) =>
+        member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        member.role.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
 
   return (
     <AdminLayout>
@@ -202,12 +180,6 @@ const AdminTeam = () => {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Role
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Social
-                      </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
@@ -233,9 +205,6 @@ const AdminTeam = () => {
                             )}
                             <div>
                               <div className="font-medium text-gray-900">{member.name}</div>
-                              <div className="text-sm text-gray-500 line-clamp-1 max-w-xs">
-                                {member.bio}
-                              </div>
                             </div>
                           </div>
                         </td>
@@ -243,53 +212,6 @@ const AdminTeam = () => {
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             {member.role}
                           </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          {member.email ? (
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              <Mail className="w-4 h-4 text-gray-400" />
-                              <span className="truncate max-w-xs">{member.email}</span>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-gray-400">—</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            {member.social_links?.linkedin && (
-                              <a
-                                href={member.social_links.linkedin}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-blue-600 transition-colors"
-                              >
-                                <Linkedin className="w-4 h-4" />
-                              </a>
-                            )}
-                            {member.social_links?.twitter && (
-                              <a
-                                href={member.social_links.twitter}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-blue-400 transition-colors"
-                              >
-                                <Twitter className="w-4 h-4" />
-                              </a>
-                            )}
-                            {member.social_links?.github && (
-                              <a
-                                href={member.social_links.github}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-gray-900 transition-colors"
-                              >
-                                <Github className="w-4 h-4" />
-                              </a>
-                            )}
-                            {!member.social_links?.linkedin && !member.social_links?.twitter && !member.social_links?.github && (
-                              <span className="text-sm text-gray-400">—</span>
-                            )}
-                          </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-end gap-2">
@@ -431,88 +353,6 @@ const AdminTeam = () => {
                       className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Lead Developer"
                     />
-                  </div>
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="john@example.com"
-                  />
-                </div>
-
-                {/* Bio */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Bio <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    required
-                    value={formData.bio}
-                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                    className="w-full px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent h-20 resize-none"
-                    placeholder="Brief description..."
-                  />
-                </div>
-
-                {/* Social Links */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Social Links (Optional)
-                  </label>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Linkedin className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                      <input
-                        type="url"
-                        value={formData.social_links.linkedin}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            social_links: { ...formData.social_links, linkedin: e.target.value },
-                          })
-                        }
-                        className="flex-1 px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="LinkedIn URL"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Twitter className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                      <input
-                        type="url"
-                        value={formData.social_links.twitter}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            social_links: { ...formData.social_links, twitter: e.target.value },
-                          })
-                        }
-                        className="flex-1 px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Twitter URL"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Github className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                      <input
-                        type="url"
-                        value={formData.social_links.github}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            social_links: { ...formData.social_links, github: e.target.value },
-                          })
-                        }
-                        className="flex-1 px-2.5 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="GitHub URL"
-                      />
-                    </div>
                   </div>
                 </div>
 

@@ -18,10 +18,48 @@ export async function handleGetBlog(req, res) {
       .sort({ created_at: -1 })
       .toArray();
 
-    res.json({ items: posts });
+    const normalizedPosts = posts.map((post) => ({
+      ...post,
+      _id: post._id.toString(),
+    }));
+
+    res.json({ items: normalizedPosts });
   } catch (error) {
     console.error("Error fetching blog posts:", error);
     res.status(500).json({ error: "Failed to fetch blog posts" });
+  }
+}
+
+/**
+ * GET /api/blog/:id
+ * Public endpoint to get a single blog post by ID
+ */
+export async function handleGetBlogById(req, res) {
+  try {
+    const { id } = req.params;
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid blog post ID" });
+    }
+
+    const db = await getDb();
+    const post = await db
+      .collection("blog_posts")
+      .findOne({ _id: new ObjectId(id) });
+
+    if (!post) {
+      return res.status(404).json({ error: "Blog post not found" });
+    }
+
+    const normalizedPost = {
+      ...post,
+      _id: post._id.toString(),
+    };
+
+    res.json({ item: normalizedPost });
+  } catch (error) {
+    console.error("Error fetching blog post by ID:", error);
+    res.status(500).json({ error: "Failed to fetch blog post" });
   }
 }
 
@@ -36,8 +74,9 @@ export async function handleCreateBlogPost(req, res) {
     // Validate with schema
     value = createBlogSchema.parse(value);
 
-    // Add uploaded image URL and Cloudinary details if file was uploaded
+    // Handle image according to schema
     let imageDetails = null;
+
     if (req.file) {
       value.image = req.file.path;
       imageDetails = {
@@ -46,6 +85,8 @@ export async function handleCreateBlogPost(req, res) {
         public_id: req.file.filename,
         size: req.file.size,
       };
+    } else if (value.image === "") {
+      delete value.image;
     }
 
     const db = await getDb();
@@ -97,8 +138,11 @@ export async function handleUpdateBlogPost(req, res) {
     // Validate with schema
     value = updateBlogSchema.parse(value);
 
-    // Add uploaded image URL and Cloudinary details if file was uploaded
+    const removeImageExplicitly = req.body?.image === "" && !req.file;
+
+    // Handle image according to schema
     let imageDetails = null;
+
     if (req.file) {
       value.image = req.file.path;
       imageDetails = {
@@ -110,15 +154,21 @@ export async function handleUpdateBlogPost(req, res) {
     }
 
     const db = await getDb();
-    const result = await db.collection("blog_posts").updateOne(
-      { _id: new ObjectId(id) },
-      {
-        $set: {
-          ...value,
-          updated_at: new Date(),
-        },
-      }
-    );
+
+    const updateQuery = {
+      $set: {
+        ...value,
+        updated_at: new Date(),
+      },
+    };
+
+    if (removeImageExplicitly) {
+      updateQuery.$unset = { image: "" };
+    }
+
+    const result = await db
+      .collection("blog_posts")
+      .updateOne({ _id: new ObjectId(id) }, updateQuery);
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Blog post not found" });
