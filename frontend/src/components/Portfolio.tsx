@@ -346,7 +346,7 @@ const PortfolioCard = ({ project, index }: PortfolioCardProps) => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    window.open(project.link, '_blank', 'noopener,noreferrer');
+                    window.open(project.link, "_blank", "noopener,noreferrer");
                   }}
                   className="w-10 h-10 rounded-full bg-[#00D9FF]/10 hover:bg-[#00D9FF]/20 flex items-center justify-center border border-[#00D9FF]/30 cursor-pointer"
                 >
