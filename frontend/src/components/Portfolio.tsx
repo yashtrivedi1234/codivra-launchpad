@@ -343,13 +343,15 @@ const PortfolioCard = ({ project, index }: PortfolioCardProps) => {
                 >
                   View Project
                 </Link>
-                <div
-                  onClick={() => window.open(project.link, '_blank', 'noopener,noreferrer')}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(project.link, '_blank', 'noopener,noreferrer');
+                  }}
                   className="w-10 h-10 rounded-full bg-[#00D9FF]/10 hover:bg-[#00D9FF]/20 flex items-center justify-center border border-[#00D9FF]/30 cursor-pointer"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <ArrowRight className="w-5 h-5 text-[#00D9FF]" />
-                </div>
+                </button>
               </>
             ) : (
               <>

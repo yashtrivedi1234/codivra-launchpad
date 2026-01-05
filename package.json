@@ -4,6 +4,7 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@types/axios": "^0.9.36"
+    "@types/axios": "^0.9.36",
+    "terser": "^5.44.1"
   }
 }
