@@ -111,6 +111,9 @@ export const Team = () => {
                             className="w-full h-full object-cover"
                             whileHover={{ scale: 1.15 }}
                             transition={{ duration: 0.6 }}
+                            loading="lazy"
+                            decoding="async"
+                            fetchPriority="low"
                           />
                           {/* Gradient Overlay */}
                           <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1C] via-[#0A0F1C]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />

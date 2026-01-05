@@ -1,9 +1,10 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles, Zap, Rocket } from "lucide-react";
 import { useGetPageQuery } from "@/lib/api";
 import { Link } from "react-router-dom";
 import aitdLogo from "@/assets/aitd-logo.png";
+import { useState, useEffect } from "react";
 
 const trustedAvatars = [
   { src: aitdLogo, href: "https://aitd-events.club/", label: "AITDS Events" },
@@ -17,6 +18,30 @@ export const Hero = () => {
   const { data } = useGetPageQuery("home");
   const heroSection = data?.sections.find((s) => s.key === "hero");
   const content = heroSection?.data || {};
+  const shouldReduceMotion = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+  const [particles, setParticles] = useState<Array<{ left: number; top: number; delay: number; duration: number }>>([]);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // Generate stable particle positions
+    const particleCount = isMobile ? 10 : 30;
+    const newParticles = Array.from({ length: particleCount }, (_, i) => ({
+      left: (i * 37.5) % 100, // Distribute evenly
+      top: (i * 23.7) % 100,
+      delay: (i * 0.3) % 3,
+      duration: 3 + (i % 3),
+    }));
+    setParticles(newParticles);
+  }, [isMobile]);
 
   const title: string =
     content.title ||
@@ -31,9 +56,9 @@ export const Hero = () => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0A0F1C]">
       {/* Animated Background */}
       <div className="absolute inset-0">
-        {/* Gradient Orbs */}
+        {/* Gradient Orbs - Optimized for mobile */}
         <motion.div
-          className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full opacity-[0.15]"
+          className="absolute top-0 right-0 w-[400px] h-[400px] md:w-[600px] md:h-[600px] lg:w-[800px] lg:h-[800px] rounded-full opacity-[0.15]"
           style={{
             background: "radial-gradient(circle, #00D9FF 0%, transparent 70%)",
           }}
@@ -47,9 +72,10 @@ export const Hero = () => {
             repeat: Infinity,
             ease: "easeInOut",
           }}
+          initial={false}
         />
         <motion.div
-          className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full opacity-[0.12]"
+          className="absolute bottom-0 left-0 w-[300px] h-[300px] md:w-[450px] md:h-[450px] lg:w-[600px] lg:h-[600px] rounded-full opacity-[0.12]"
           style={{
             background: "radial-gradient(circle, #0066FF 0%, transparent 70%)",
           }}
@@ -63,6 +89,7 @@ export const Hero = () => {
             repeat: Infinity,
             ease: "easeInOut",
           }}
+          initial={false}
         />
 
         {/* Animated Grid */}
@@ -81,24 +108,25 @@ export const Hero = () => {
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         />
 
-        {/* Floating Particles */}
-        {[...Array(30)].map((_, i) => (
+        {/* Floating Particles - Reduced on mobile for performance */}
+        {!shouldReduceMotion && particles.map((particle, i) => (
           <motion.div
             key={i}
             className="absolute w-1 h-1 bg-[#00D9FF] rounded-full"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
             }}
             animate={{
               y: [0, -40, 0],
               opacity: [0, 0.8, 0],
             }}
             transition={{
-              duration: 3 + Math.random() * 3,
+              duration: particle.duration,
               repeat: Infinity,
-              delay: Math.random() * 3,
+              delay: particle.delay,
             }}
+            initial={false}
           />
         ))}
       </div>
@@ -229,7 +257,14 @@ export const Hero = () => {
                       transition={{ delay: 1.1 + i * 0.05, type: "spring" }}
                       className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-[#0A0F1C] overflow-hidden ring-2 ring-[#00D9FF]/40"
                     >
-                      <img src={item.src} alt={item.label} className="w-full h-full object-cover" loading="lazy" />
+                      <img 
+                        src={item.src} 
+                        alt={item.label} 
+                        className="w-full h-full object-cover" 
+                        loading="lazy"
+                        decoding="async"
+                        fetchPriority="low"
+                      />
                     </motion.div>
                   );
                   return item.href ? (

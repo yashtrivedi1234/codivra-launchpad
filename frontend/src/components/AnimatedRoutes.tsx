@@ -1,37 +1,46 @@
-import AdminSettings from "@/pages/AdminSettings";
-import PrivacyPolicy from "@/pages/PrivacyPolicy";
-import TermsOfService from "@/pages/TermsOfService";
+import { lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import PageTransition from "./PageTransition";
-import Index from "@/pages/Index.tsx";
-import Services from "@/pages/Services.tsx";
-import About from "@/pages/About.tsx";
-import Pricing from "@/pages/Pricing.tsx";
-import Portfolio from "@/pages/Portfolio.tsx";
-import Contact from "@/pages/Contact.tsx";
-import Inquiry from "@/pages/Inquiry.tsx";
-import Blog from "@/pages/Blog.tsx";
-import BlogDetail from "@/pages/BlogDetail.tsx"; // Add this import
-import Careers from "@/pages/Careers.tsx";
-import NotFound from "@/pages/NotFound.tsx";
-import AdminLogin from "@/pages/AdminLogin.tsx";
-import AdminDashboard from "@/pages/admin/AdminDashboard.tsx";
-import AdminServices from "@/pages/admin/AdminServices.tsx";
-import AdminPortfolio from "@/pages/admin/AdminPortfolio.tsx";
-import AdminBlog from "@/pages/admin/AdminBlog.tsx";
-import AdminCareers from "@/pages/admin/AdminCareers.tsx";
-import AdminContact from "@/pages/admin/AdminContact.tsx";
-import AdminTeam from "@/pages/admin/AdminTeam.tsx";
+import { LoadingSpinner } from "./PageLoader";
 import RequireAdmin from "./admin/RequireAdmin";
-import NotificationsPage from "@/pages/admin/Notifications";
-import AdminInquiry from "@/pages/admin/AdminInquiry.tsx";
+
+// Lazy load pages for better performance
+const Index = lazy(() => import("@/pages/Index.tsx"));
+const Services = lazy(() => import("@/pages/Services.tsx"));
+const About = lazy(() => import("@/pages/About.tsx"));
+const Pricing = lazy(() => import("@/pages/Pricing.tsx"));
+const Portfolio = lazy(() => import("@/pages/Portfolio.tsx"));
+const Contact = lazy(() => import("@/pages/Contact.tsx"));
+const Inquiry = lazy(() => import("@/pages/Inquiry.tsx"));
+const Blog = lazy(() => import("@/pages/Blog.tsx"));
+const BlogDetail = lazy(() => import("@/pages/BlogDetail.tsx"));
+const Careers = lazy(() => import("@/pages/Careers.tsx"));
+const NotFound = lazy(() => import("@/pages/NotFound.tsx"));
+const AdminLogin = lazy(() => import("@/pages/AdminLogin.tsx"));
+const AdminSettings = lazy(() => import("@/pages/AdminSettings"));
+const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("@/pages/TermsOfService"));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard.tsx"));
+const AdminServices = lazy(() => import("@/pages/admin/AdminServices.tsx"));
+const AdminPortfolio = lazy(() => import("@/pages/admin/AdminPortfolio.tsx"));
+const AdminBlog = lazy(() => import("@/pages/admin/AdminBlog.tsx"));
+const AdminCareers = lazy(() => import("@/pages/admin/AdminCareers.tsx"));
+const AdminContact = lazy(() => import("@/pages/admin/AdminContact.tsx"));
+const AdminTeam = lazy(() => import("@/pages/admin/AdminTeam.tsx"));
+const NotificationsPage = lazy(() => import("@/pages/admin/Notifications"));
+const AdminInquiry = lazy(() => import("@/pages/admin/AdminInquiry.tsx"));
 const AnimatedRoutes = () => {
   const location = useLocation();
-  // Scroll to top on route change
+  // Scroll to top on route change (only if not restoring from cache)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
+    // Use requestAnimationFrame to avoid blocking bfcache
+    requestAnimationFrame(() => {
+      if (document.documentElement.scrollTop > 0) {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+    });
   }, [location.pathname]);
 
   return (
@@ -43,7 +52,9 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminSettings />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminSettings />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
@@ -52,7 +63,9 @@ const AnimatedRoutes = () => {
           path="/"
           element={
             <PageTransition>
-              <Index />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Index />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -60,7 +73,9 @@ const AnimatedRoutes = () => {
           path="/services"
           element={
             <PageTransition>
-              <Services />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Services />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -68,7 +83,9 @@ const AnimatedRoutes = () => {
           path="/about"
           element={
             <PageTransition>
-              <About />
+              <Suspense fallback={<LoadingSpinner />}>
+                <About />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -76,7 +93,9 @@ const AnimatedRoutes = () => {
           path="/pricing"
           element={
             <PageTransition>
-              <Pricing />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Pricing />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -84,7 +103,9 @@ const AnimatedRoutes = () => {
           path="/portfolio"
           element={
             <PageTransition>
-              <Portfolio />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Portfolio />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -92,7 +113,9 @@ const AnimatedRoutes = () => {
           path="/contact"
           element={
             <PageTransition>
-              <Contact />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Contact />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -100,7 +123,9 @@ const AnimatedRoutes = () => {
           path="/inquiry"
           element={
             <PageTransition>
-              <Inquiry />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Inquiry />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -108,7 +133,9 @@ const AnimatedRoutes = () => {
           path="/blog"
           element={
             <PageTransition>
-              <Blog />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Blog />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -116,7 +143,9 @@ const AnimatedRoutes = () => {
           path="/blog/:id"
           element={
             <PageTransition>
-              <BlogDetail />
+              <Suspense fallback={<LoadingSpinner />}>
+                <BlogDetail />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -124,7 +153,9 @@ const AnimatedRoutes = () => {
           path="/careers"
           element={
             <PageTransition>
-              <Careers />
+              <Suspense fallback={<LoadingSpinner />}>
+                <Careers />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -132,7 +163,9 @@ const AnimatedRoutes = () => {
           path="/admin/login"
           element={
             <PageTransition>
-              <AdminLogin />
+              <Suspense fallback={<LoadingSpinner />}>
+                <AdminLogin />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -141,7 +174,9 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminDashboard />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminDashboard />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
@@ -151,7 +186,9 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminDashboard />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminDashboard />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
@@ -161,7 +198,9 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminServices />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminServices />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
@@ -171,7 +210,9 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminPortfolio />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminPortfolio />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
@@ -181,7 +222,9 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminBlog />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminBlog />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
@@ -191,7 +234,9 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminCareers />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminCareers />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
@@ -201,7 +246,9 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminContact />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminContact />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
@@ -211,7 +258,9 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminTeam />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminTeam />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
@@ -221,28 +270,32 @@ const AnimatedRoutes = () => {
           element={
             <RequireAdmin>
               <PageTransition>
-                <NotificationsPage />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <NotificationsPage />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
         />
-
-<Route
+        <Route
           path="/admin/inquiry"
           element={
             <RequireAdmin>
               <PageTransition>
-                <AdminInquiry />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <AdminInquiry />
+                </Suspense>
               </PageTransition>
             </RequireAdmin>
           }
         />
-
         <Route
           path="/privacy-policy"
           element={
             <PageTransition>
-              <PrivacyPolicy />
+              <Suspense fallback={<LoadingSpinner />}>
+                <PrivacyPolicy />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -250,7 +303,9 @@ const AnimatedRoutes = () => {
           path="/terms-of-service"
           element={
             <PageTransition>
-              <TermsOfService />
+              <Suspense fallback={<LoadingSpinner />}>
+                <TermsOfService />
+              </Suspense>
             </PageTransition>
           }
         />
@@ -258,7 +313,9 @@ const AnimatedRoutes = () => {
           path="*"
           element={
             <PageTransition>
-              <NotFound />
+              <Suspense fallback={<LoadingSpinner />}>
+                <NotFound />
+              </Suspense>
             </PageTransition>
           }
         />

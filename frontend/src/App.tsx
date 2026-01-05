@@ -17,10 +17,17 @@ function App() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrolled = scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0;
-      setProgress(scrolled);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const scrolled = scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0;
+          setProgress(scrolled);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });

@@ -3,7 +3,7 @@ import { useGetPortfolioQuery } from "@/lib/api";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Link } from "react-router-dom"; // add this import
+import { Link } from "react-router-dom";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -217,10 +217,6 @@ export const Portfolio = () => {
         )}
       </div>
 
-      {/* Add Google Fonts */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Crimson+Pro:wght@300;400;600&display=swap');
-      `}</style>
     </section>
   );
 };
@@ -281,6 +277,9 @@ const PortfolioCard = ({ project, index }: PortfolioCardProps) => {
                 src={project.image}
                 alt={project.title}
                 className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
               />
             </div>
           ) : (

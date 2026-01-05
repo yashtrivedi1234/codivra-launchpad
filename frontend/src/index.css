@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Crimson+Pro:wght@300;400;600&display=swap');
+/* Optimized font imports - only load weights actually used */
+/* Oswald: 400 (normal), 600 (semibold), 700 (bold/black fallback) */
+/* Crimson Pro: 300 (light), 400 (normal) - removed unused 600 */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Crimson+Pro:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
 /* ...existing code... */
 
@@ -97,13 +101,89 @@
     @apply border-border;
   }
 
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    /* Improve scrolling performance */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Optimize animations for performance */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Touch optimizations */
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Image optimization */
+  img {
+    max-width: 100%;
+    height: auto;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  /* Smooth scrolling for mobile */
+  @media (max-width: 768px) {
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Reduce animation complexity on mobile */
+    * {
+      animation-duration: 0.8s !important;
+    }
+  }
+  
+  /* Responsive container improvements */
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
   }
 }
 
@@ -146,53 +226,82 @@
   .animate-fade-up {
     animation: fadeUp 0.6s ease-out forwards;
     opacity: 0;
+    will-change: opacity, transform;
   }
 
   .animate-fade-up-delay-1 {
     animation: fadeUp 0.6s ease-out 0.1s forwards;
     opacity: 0;
+    will-change: opacity, transform;
   }
 
   .animate-fade-up-delay-2 {
     animation: fadeUp 0.6s ease-out 0.2s forwards;
     opacity: 0;
+    will-change: opacity, transform;
   }
 
   .animate-fade-up-delay-3 {
     animation: fadeUp 0.6s ease-out 0.3s forwards;
     opacity: 0;
+    will-change: opacity, transform;
   }
 
   .hover-lift {
-    @apply transition-all duration-300;
+    @apply transition-transform duration-300;
+    will-change: transform;
   }
 
   .hover-lift:hover {
-    transform: translateY(-4px);
+    transform: translateY(-4px) translateZ(0);
     box-shadow: var(--shadow-elevated);
+  }
+
+  /* Performance optimizations */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Responsive text */
+  .responsive-text {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
   }
 }
 
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translate3d(0, 20px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes float {
   0%, 100% {
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translate3d(0, -10px, 0);
   }
 }
 
 .animate-float {
   animation: float 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Reduce animations on mobile for better performance */
+@media (max-width: 768px) {
+  .animate-float {
+    animation-duration: 6s;
+  }
 }

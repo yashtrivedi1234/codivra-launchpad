@@ -218,7 +218,7 @@ const ApplicationForm = ({ jobTitle, onClose }: ApplicationFormProps) => {
           variant: "destructive",
         });
       } else {
-        console.error("Error submitting application:", error);
+        // Error handled by toast notification
         toast({
           title: "Submission Failed",
           description: "There was an error submitting your application. Please try again.",

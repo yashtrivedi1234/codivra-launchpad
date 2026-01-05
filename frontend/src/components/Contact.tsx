@@ -151,7 +151,6 @@ export const Contact = () => {
           variant: "destructive",
         });
       } else {
-        console.error(error);
         setIsSubmitted(false);
         let errorMsg = "Please check your inputs or reach us at codivrasolutions@gmail.com.";
         const fieldErrors = error?.data?.issues?.fieldErrors;

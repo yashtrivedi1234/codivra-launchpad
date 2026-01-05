@@ -23,8 +23,8 @@ const pageVariants = {
 
 const pageTransition = {
   type: "tween" as const,
-  ease: "anticipate" as const,
-  duration: 0.4,
+  ease: "easeInOut" as const,
+  duration: 0.3,
 };
 
 const PageTransition = ({ children }: PageTransitionProps) => {

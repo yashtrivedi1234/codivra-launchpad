@@ -9,6 +9,7 @@ const Services = () => {
       <Header />
       <main className="pt-20">
         <PageBreadcrumb />
+        <h1 className="sr-only">Our Services</h1>
         <ServicesSection />
       </main>
       <Footer />

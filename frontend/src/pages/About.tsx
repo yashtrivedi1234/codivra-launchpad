@@ -11,6 +11,7 @@ const About = () => {
       <Header />
       <main className="pt-20">
         <PageBreadcrumb />
+        <h1 className="sr-only">About Us</h1>
         <AboutSection />
         <WhyChooseUs />
         <Team />

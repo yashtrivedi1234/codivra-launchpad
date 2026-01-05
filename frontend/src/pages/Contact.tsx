@@ -9,6 +9,7 @@ const Contact = () => {
       <Header />
       <main className="pt-20">
         <PageBreadcrumb />
+        <h1 className="sr-only">Contact Us</h1>
         <ContactSection />
       </main>
       <Footer />

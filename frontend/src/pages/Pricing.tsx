@@ -10,6 +10,7 @@ const Pricing = () => {
       <Header />
       <main className="pt-20">
         <PageBreadcrumb />
+        <h1 className="sr-only">Pricing</h1>
         <PricingSection />
         <FAQ />
       </main>

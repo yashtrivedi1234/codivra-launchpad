@@ -168,7 +168,7 @@ export const Inquiry = () => {
           variant: "destructive",
         });
       } else {
-        console.error(error);
+        // Error handled by toast notification
         setIsSubmitted(false);
         let errorMsg = "Please check your inputs or reach us at codivrasolutions@gmail.com.";
         const fieldErrors = error?.data?.issues?.fieldErrors;

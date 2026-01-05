@@ -143,8 +143,9 @@ export const Services = () => {
                                 whileHover={{ scale: 1.15 }}
                                 transition={{ duration: 0.7 }}
                                 loading="lazy"
+                                decoding="async"
+                                fetchPriority="low"
                                 onError={(e) => {
-                                  console.error("[Services] Image failed to load:", imageUrl);
                                   e.currentTarget.style.display = "none";
                                 }}
                               />

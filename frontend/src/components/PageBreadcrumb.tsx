@@ -1,3 +1,4 @@
+import React from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
 import {
@@ -26,7 +27,7 @@ const PageBreadcrumb = () => {
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
   const { data } = useGetBlogByIdQuery(id || "", { skip: !id });
-  const blogTitle = data?.item?.title;
+  const blogTitle = data?.data?.title;
 
   if (pathSegments.length === 0) return null;
 
@@ -60,7 +61,7 @@ const PageBreadcrumb = () => {
               }
 
               return (
-                <div key={path} className="flex items-center gap-2">
+                <React.Fragment key={path}>
                   <BreadcrumbSeparator>
                     <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 text-white/30" />
                   </BreadcrumbSeparator>
@@ -77,7 +78,7 @@ const PageBreadcrumb = () => {
                       </BreadcrumbLink>
                     )}
                   </BreadcrumbItem>
-                </div>
+                </React.Fragment>
               );
             })}
           </BreadcrumbList>

@@ -29,7 +29,7 @@ const AdminLogin = () => {
 
       navigate("/admin", { replace: true });
     } catch (error: any) {
-      console.error("Admin login failed:", error);
+      // Error handled by toast notification
       toast({
         title: "Login failed",
         description:

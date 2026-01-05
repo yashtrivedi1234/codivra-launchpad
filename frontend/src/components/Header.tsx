@@ -27,6 +27,7 @@ export const Header = () => {
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.1, ease: "easeOut" }}
 				className="w-full fixed top-0 z-50 transition-all duration-500 bg-[#0A0F1C]/95 backdrop-blur-xl border-b-2 border-white/10"
+				style={{ willChange: 'transform' }}
 			>
 				<div className="container mx-auto px-4 sm:px-6 lg:px-12">
 					<div className="flex items-center justify-between h-16 sm:h-20 lg:h-24">
@@ -40,6 +41,8 @@ export const Header = () => {
 								width={160}
 								height={64}
 								className="h-10 sm:h-12 lg:h-16 w-auto object-contain transition-all duration-300 brightness-0 invert"
+								fetchPriority="high"
+								decoding="async"
 							/>
 						</Link>
 

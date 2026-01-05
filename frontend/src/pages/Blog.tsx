@@ -308,6 +308,9 @@ const Blog = () => {
                               className="w-full h-full object-cover"
                               whileHover={{ scale: 1.15 }}
                               transition={{ duration: 0.6 }}
+                              loading="lazy"
+                              decoding="async"
+                              fetchPriority="low"
                             />
                             
                             {/* Gradient overlay */}

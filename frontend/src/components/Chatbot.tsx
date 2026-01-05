@@ -93,7 +93,7 @@ export const Chatbot = () => {
 
       setMessages((prev) => [...prev, botResponse]);
     } catch (error: any) {
-      console.error("Chatbot error:", error);
+      // Error handled silently in production
       
       // Fallback error message
       const errorMessage: Message = {
