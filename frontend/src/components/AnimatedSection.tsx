@@ -6,17 +6,19 @@ interface AnimatedSectionProps {
   children: ReactNode;
   className?: string;
   delay?: number;
+  priority?: boolean;
 }
 
-export const AnimatedSection = ({ children, className, delay = 0 }: AnimatedSectionProps) => {
+export const AnimatedSection = ({ children, className, delay = 0, priority = false }: AnimatedSectionProps) => {
   const shouldReduceMotion = useReducedMotion() || useIsMobile();
+  const instant = priority || shouldReduceMotion;
   
   return (
     <motion.div
-      initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 40 }}
-      whileInView={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+      initial={instant ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+      whileInView={instant ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={instant ? { duration: 0 } : { duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}

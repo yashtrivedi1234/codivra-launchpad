@@ -661,9 +661,9 @@ const Careers = () => {
       )}
       
       {/* Animated Background Elements */}
-      <div className="fixed inset-0 pointer-events-none">
+      <div className="fixed inset-0 pointer-events-none" aria-hidden="true">
         <motion.div 
-          className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#00D9FF]/3 rounded-full blur-[150px]"
+          className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#00D9FF]/3 rounded-full blur-[150px] transform-gpu [content-visibility:auto] [contain-intrinsic-size:800px]"
           animate={{ 
             scale: [1, 1.2, 1],
             opacity: [0.03, 0.05, 0.03]
@@ -671,7 +671,7 @@ const Careers = () => {
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#0066FF]/3 rounded-full blur-[150px]"
+          className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#0066FF]/3 rounded-full blur-[150px] transform-gpu [content-visibility:auto] [contain-intrinsic-size:600px]"
           animate={{ 
             scale: [1.2, 1, 1.2],
             opacity: [0.03, 0.05, 0.03]
@@ -687,9 +687,9 @@ const Careers = () => {
         <section className="relative py-12 sm:py-16 md:py-20 lg:py-32">
           <div className="container mx-auto px-4 sm:px-6 lg:px-12">
             <div className="max-w-7xl mx-auto">
-              <AnimatedSection>
+              <AnimatedSection priority>
                 <motion.div
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={false}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                   className="text-center mb-8"
